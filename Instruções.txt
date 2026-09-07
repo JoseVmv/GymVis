@@ -1,0 +1,559 @@
+Quero que você desenvolva a primeira versão funcional de um SaaS B2B para academias.
+
+## Objetivo do produto
+
+O sistema será uma camada de análise e inteligência sobre os dados que uma academia já possui.
+
+A academia já possui sua própria catraca e seu próprio sistema de gestão. **Nosso sistema NÃO deve controlar, desbloquear, configurar ou enviar comandos para a catraca.**
+
+No futuro, os dados poderão ser obtidos através de APIs, webhooks ou integrações com sistemas de terceiros.
+
+Por enquanto, porém, quero um protótipo totalmente local para desenvolvimento e testes.
+
+A ideia central é:
+
+Sistema da academia → dados de alunos/acessos → nosso SaaS → análise → dashboard
+
+O principal objetivo é ajudar o dono da academia a descobrir:
+
+* quantos alunos estão ativos;
+* quantos alunos estão entrando/saindo;
+* frequência média;
+* alunos que estão deixando de frequentar;
+* quedas de frequência;
+* possíveis alunos em risco de evasão;
+* retenção;
+* crescimento da academia;
+* receita potencialmente em risco.
+
+---
+
+# 1. Restrição importante: banco de dados LOCAL
+
+Nesta primeira versão NÃO utilize Supabase, PostgreSQL remoto, Firebase ou qualquer banco externo.
+
+Quero que todos os dados sejam armazenados localmente no computador para facilitar meus testes.
+
+Escolha uma solução simples e confiável para persistência local.
+
+Pode utilizar, por exemplo:
+
+* SQLite;
+* arquivos JSON estruturados;
+* ou outra solução local simples.
+
+Priorize SQLite se fizer sentido para a arquitetura escolhida.
+
+O banco deve ficar dentro do próprio projeto, em uma pasta como:
+
+/data
+
+Por exemplo:
+
+/data/gym.db
+
+ou equivalente.
+
+O sistema deve funcionar completamente offline depois de instalado/dependências instaladas.
+
+Não quero depender de nenhuma API externa para o funcionamento básico.
+
+---
+
+# 2. Gerador de dados de academia
+
+Crie também uma ferramenta para gerar dados fictícios realistas de uma academia.
+
+Ela deve permitir popular o banco local com uma academia simulada.
+
+Crie uma quantidade razoável de dados para permitir testar o dashboard, por exemplo:
+
+* 500–2000 alunos;
+* diferentes planos;
+* diferentes valores de mensalidade;
+* alunos ativos;
+* alunos cancelados;
+* alunos pausados;
+* alunos inadimplentes;
+* alunos com diferentes frequências;
+* histórico de acessos de vários meses;
+* novos alunos entrando ao longo do tempo;
+* alunos deixando a academia;
+* padrões de frequência diferentes.
+
+Os dados NÃO devem parecer completamente aleatórios.
+
+Quero simular comportamento de uma academia real.
+
+Por exemplo:
+
+Aluno A:
+
+* entrou há 2 anos;
+* normalmente frequenta 4x por semana;
+* continua ativo.
+
+Aluno B:
+
+* entrou há 8 meses;
+* normalmente frequentava 3x por semana;
+* nas últimas 3 semanas caiu para 1x;
+* deve aparecer como possível risco de evasão.
+
+Aluno C:
+
+* não entra há 18 dias;
+* deve aparecer como aluno inativo/em risco.
+
+Aluno D:
+
+* entrou recentemente;
+* frequenta regularmente.
+
+Aluno E:
+
+* cancelou depois de 5 meses.
+
+Também quero alguma variação natural nos horários e dias de acesso.
+
+Evite simplesmente gerar números uniformemente aleatórios.
+
+O gerador deve produzir dados que façam as métricas do dashboard parecerem plausíveis.
+
+Idealmente, crie um comando como:
+
+npm run seed
+
+ou equivalente.
+
+Se possível, permita parâmetros como:
+
+npm run seed -- --students 1000 --months 12
+
+Documente como utilizar.
+
+---
+
+# 3. Modelo de dados
+
+Crie uma estrutura de dados simples e preparada para crescer posteriormente.
+
+No mínimo, quero entidades equivalentes a:
+
+Academia
+
+* id
+* nome
+* created_at
+
+Aluno
+
+* id
+* academy_id
+* nome
+* email
+* telefone
+* data_entrada
+* data_saida
+* status
+* plano_id
+* mensalidade
+
+Plano
+
+* id
+* academy_id
+* nome
+* valor
+
+Acesso
+
+* id
+* academy_id
+* aluno_id
+* timestamp
+* tipo_evento
+
+Não armazene dados biométricos.
+
+Não armazene imagens faciais.
+
+Não implemente reconhecimento facial.
+
+Não implemente comunicação com catracas.
+
+O sistema deve trabalhar apenas com os eventos de acesso já registrados pelo sistema da academia.
+
+---
+
+# 4. Dashboard
+
+Crie um frontend moderno e profissional para visualizar os dados do banco local.
+
+O dashboard deve ser a tela principal.
+
+Quero uma interface que pareça um produto SaaS real, não uma página de demonstração genérica.
+
+O dashboard deve apresentar pelo menos:
+
+### Visão geral
+
+* Alunos ativos
+* Novos alunos no período
+* Cancelamentos no período
+* Crescimento líquido
+* Total de acessos
+* Frequência média semanal
+
+### Alertas
+
+Mostrar claramente:
+
+* alunos sem acesso há 7+ dias;
+* alunos sem acesso há 14+ dias;
+* alunos sem acesso há 30+ dias;
+* alunos com queda significativa de frequência.
+
+Exemplo:
+
+"42 alunos não frequentam a academia há mais de 14 dias"
+
+"17 alunos apresentaram queda de frequência superior a 30%"
+
+Esses valores devem ser calculados a partir do banco, não hardcoded.
+
+---
+
+# 5. Receita em risco
+
+Crie uma métrica chamada "Receita em risco".
+
+A ideia é estimar quanto da receita mensal atual pertence a alunos classificados como alto risco de evasão.
+
+Exemplo:
+
+31 alunos em alto risco
+× R$89/mês
+= R$2.759 de receita potencialmente em risco.
+
+Essa métrica deve ser calculada dinamicamente.
+
+Deixe claro visualmente que é uma estimativa, não dinheiro efetivamente perdido.
+
+---
+
+# 6. Análise de frequência
+
+Quero visualizar a frequência dos alunos.
+
+Algumas métricas úteis:
+
+* média de acessos por semana;
+* frequência dos últimos 7 dias;
+* frequência dos últimos 30 dias;
+* frequência histórica;
+* variação de frequência.
+
+O sistema deve conseguir identificar situações como:
+
+"Normalmente: 3,8x/semana"
+"Últimos 30 dias: 1,9x/semana"
+"Queda: -50%"
+
+Isso deve alimentar a classificação de risco.
+
+---
+
+# 7. Classificação de risco
+
+Não utilize Machine Learning nesta primeira versão.
+
+Implemente regras simples e transparentes.
+
+Por exemplo:
+
+LOW:
+comportamento normal.
+
+MEDIUM:
+queda relevante de frequência.
+
+HIGH:
+10+ dias sem acesso ou queda muito grande de frequência.
+
+CRITICAL:
+30+ dias sem acesso ou outros sinais fortes.
+
+Esses thresholds devem ficar centralizados em um local fácil de alterar posteriormente.
+
+Não espalhe números mágicos pelo código.
+
+A arquitetura deve permitir alterar as regras no futuro.
+
+---
+
+# 8. Página de alunos
+
+Crie uma página/listagem de alunos.
+
+Deve ser possível:
+
+* pesquisar por nome;
+* filtrar por status;
+* filtrar por risco;
+* visualizar plano;
+* visualizar mensalidade;
+* visualizar último acesso;
+* visualizar dias desde o último acesso;
+* visualizar frequência média.
+
+Ao clicar em um aluno, abrir uma página/perfil detalhado.
+
+---
+
+# 9. Perfil individual do aluno
+
+O perfil deve mostrar:
+
+* nome;
+* status;
+* plano;
+* mensalidade;
+* data de entrada;
+* data de saída, caso exista;
+* último acesso;
+* dias desde último acesso;
+* frequência média;
+* frequência recente;
+* variação da frequência;
+* classificação de risco;
+* histórico de acessos.
+
+Se possível, mostrar um gráfico simples de frequência ao longo do tempo.
+
+A ideia é que o dono da academia consiga entender rapidamente:
+
+"Esse aluno costumava frequentar bastante, mas está sumindo."
+
+---
+
+# 10. Retenção
+
+Crie uma visualização simples de retenção/coortes se isso puder ser feito sem complicar excessivamente o MVP.
+
+Por exemplo:
+
+Alunos que entraram em determinado mês:
+
+Mês 1: 100%
+Mês 2: 91%
+Mês 3: 84%
+Mês 6: 72%
+Mês 12: 61%
+
+Se uma implementação de coorte completa deixar o projeto excessivamente complexo, implemente primeiro uma versão simples e funcional.
+
+O importante é que os dados sejam calculados do banco.
+
+---
+
+# 11. Gráficos
+
+Inclua gráficos úteis, mas não exagere.
+
+Quero principalmente:
+
+* evolução de alunos ativos;
+* novos alunos vs cancelamentos;
+* evolução de acessos;
+* frequência média;
+* distribuição de alunos por nível de risco.
+
+Evite colocar gráficos apenas para "encher" o dashboard.
+
+Cada visualização deve responder alguma pergunta útil para o dono da academia.
+
+---
+
+# 12. Arquitetura
+
+Escolha uma stack moderna e simples.
+
+Se o projeto ainda não possuir uma stack definida, uma boa opção seria:
+
+Frontend:
+
+* React
+* TypeScript
+* Vite ou Next.js
+
+Backend:
+
+* Node.js + TypeScript
+
+Database:
+
+* SQLite
+
+ORM:
+
+* Prisma ou Drizzle
+
+Escolha a opção que produzir uma arquitetura mais simples e sustentável para esse MVP.
+
+Quero separação razoável entre:
+
+* database;
+* regras de negócio;
+* API/backend;
+* frontend;
+* geração de dados.
+
+Não quero microservices.
+
+Não quero Docker obrigatório.
+
+Não quero Kubernetes.
+
+Não quero infraestrutura cloud.
+
+É um projeto local de desenvolvimento.
+
+---
+
+# 13. Preparação para o futuro
+
+Embora o banco seja local agora, estruture o código de forma que posteriormente seja relativamente simples trocar:
+
+SQLite local
+
+por
+
+PostgreSQL/Supabase.
+
+Da mesma forma, as entradas de dados devem ser abstraídas de maneira que futuramente possamos criar:
+
+CSV importer
+API connector
+Webhook connector
+Integração com sistemas de academias
+
+Mas NÃO implemente essas integrações agora.
+
+Apenas não crie uma arquitetura que torne isso impossível depois.
+
+---
+
+# 14. Multi-academia
+
+Mesmo sendo um banco local com apenas dados de teste, inclua academy_id nas entidades relevantes.
+
+Quero que a arquitetura já considere que futuramente existirão várias academias no mesmo sistema.
+
+Não é necessário implementar autenticação ou isolamento completo entre academias agora.
+
+---
+
+# 15. UX/UI
+
+A interface deve parecer um SaaS B2B moderno.
+
+Prioridades:
+
+* limpa;
+* profissional;
+* fácil de entender;
+* boa hierarquia visual;
+* responsiva;
+* desktop-first, mas funcionando em celular;
+* poucos elementos desnecessários.
+
+Não quero uma interface cheia de cards sem propósito.
+
+O dashboard deve permitir que um dono de academia bata o olho e entenda:
+
+"Como minha academia está?"
+"Quantos alunos estão sumindo?"
+"Quanto de receita está em risco?"
+"O que eu deveria investigar?"
+
+---
+
+# 16. Dados reais vs dados derivados
+
+Tome cuidado para não armazenar informações redundantes.
+
+Por exemplo:
+
+Não quero necessariamente salvar permanentemente:
+
+days_since_last_access
+
+se isso puder ser calculado a partir do último acesso.
+
+Da mesma forma, métricas como frequência, risco e receita em risco devem preferencialmente ser derivadas dos dados brutos.
+
+Os eventos de acesso são a fonte de verdade.
+
+---
+
+# 17. Qualidade do código
+
+Quero código limpo e organizado.
+
+Priorize:
+
+* TypeScript;
+* tipagem forte;
+* funções pequenas;
+* separação de responsabilidades;
+* validação de dados;
+* tratamento de erros;
+* nomes claros;
+* comentários apenas quando realmente necessários.
+
+Não faça overengineering.
+
+Não implemente funcionalidades que não foram solicitadas.
+
+---
+
+# 18. Entrega
+
+Ao terminar:
+
+1. O projeto deve rodar localmente com comandos simples.
+2. Deve existir um comando para criar/popular o banco com dados fictícios.
+3. O frontend deve conseguir ler os dados do banco local através do backend.
+4. O dashboard deve funcionar de ponta a ponta.
+5. As métricas devem ser realmente calculadas.
+6. Os filtros devem funcionar.
+7. A página individual dos alunos deve funcionar.
+8. O projeto deve incluir README com:
+
+   * requisitos;
+   * instalação;
+   * configuração;
+   * criação do banco;
+   * geração dos dados;
+   * execução do backend;
+   * execução do frontend;
+   * estrutura do projeto.
+
+Antes de finalizar, teste a aplicação localmente e corrija erros de build/runtime.
+
+## Importante
+
+Não quero apenas uma mockup visual.
+
+Quero uma primeira versão **funcional**, na qual:
+
+gerador → banco local → backend → dashboard
+
+seja um fluxo real.
+
+Os dados exibidos na interface devem vir do banco e as métricas devem ser calculadas de verdade.
+
+Comece analisando o projeto atual e, caso ainda esteja vazio, inicialize a estrutura necessária.
+
+Não me faça perguntas sobre decisões de implementação triviais: escolha a opção mais simples e adequada e siga em frente.

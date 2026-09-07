@@ -1,0 +1,28 @@
+{
+  "name": "gymvis",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Camada de análise e inteligência sobre os dados de academias",
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "seed": "npm run seed -w server --",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
+    "build": "npm run typecheck && npm run build -w client",
+    "start": "npm run start -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true
+  }
+}
