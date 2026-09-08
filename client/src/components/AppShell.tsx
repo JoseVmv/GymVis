@@ -1,6 +1,10 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { Logo } from './ui';
+
+/** Acima daqui o menu lateral é fixo e a gaveta não existe. */
+const DESKTOP = '(min-width: 861px)';
 
 type IconName = 'overview' | 'students' | 'finance' | 'retention' | 'settings' | 'about';
 
@@ -81,9 +85,66 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/sobre', label: 'Sobre', icon: 'about' },
 ];
 
+/** Três risquinhos que viram X quando a gaveta está aberta. */
+function MenuIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      className={`burger${open ? ' is-open' : ''}`}
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      aria-hidden
+      focusable="false"
+    >
+      <line className="burger__top" x1="3.5" y1="7" x2="20.5" y2="7" />
+      <line className="burger__mid" x1="3.5" y1="12" x2="20.5" y2="12" />
+      <line className="burger__bot" x1="3.5" y1="17" x2="20.5" y2="17" />
+    </svg>
+  );
+}
+
 export function AppShell() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  // Escolher um destino é o fim da tarefa da gaveta: ela sai de cena sozinha.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  // No desktop a gaveta não existe; se a janela cresce com ela aberta, o
+  // estado (e a trava de rolagem) precisa ser desfeito.
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP);
+    const onChange = (e: MediaQueryListEvent) => {
+      if (e.matches) setMenuOpen(false);
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    // Com a gaveta aberta, rolar a página atrás só desorienta.
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = previous;
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
 
   async function handleLogout() {
     await logout();
@@ -92,10 +153,55 @@ export function AppShell() {
 
   return (
     <div className="shell">
-      <aside className="side">
+      {/* Barra de topo só do celular: abre a gaveta e mantém a marca à vista. */}
+      <header className="topbar">
+        <button
+          type="button"
+          className="topbar__menu"
+          onClick={() => setMenuOpen((v) => !v)}
+          aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={menuOpen}
+          aria-controls="menu-lateral"
+        >
+          <MenuIcon open={menuOpen} />
+        </button>
+        <div className="topbar__brand">
+          <Logo size={22} idSuffix="topo" />
+          <span>GymVis</span>
+        </div>
+      </header>
+
+      {/* Escurece e engole os cliques da página coberta pela gaveta. */}
+      <div
+        className={`scrim${menuOpen ? ' is-open' : ''}`}
+        onClick={closeMenu}
+        aria-hidden
+      />
+
+      <aside id="menu-lateral" className={`side${menuOpen ? ' is-open' : ''}`}>
         <div className="side__brand">
           <Logo size={26} />
           <span>GymVis</span>
+          {/* Tocar fora fecha, mas nem todo mundo sabe disso. */}
+          <button
+            type="button"
+            className="side__close"
+            onClick={closeMenu}
+            aria-label="Fechar menu"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
         </div>
         {/* O nome da academia fica acima do menu: o painel é da operação do
             dono, e o GymVis é só o instrumento que ele usa. */}

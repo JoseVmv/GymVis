@@ -337,8 +337,7 @@ export function StudentsPage() {
 
       <div className="row row--wrap" style={{ marginBottom: 12 }}>
         <input
-          className="input"
-          style={{ width: 260 }}
+          className="input filtro-busca"
           placeholder="Buscar por nome"
           value={busca}
           onChange={(e) => setParam('busca', e.target.value)}
@@ -374,7 +373,7 @@ export function StudentsPage() {
             </option>
           ))}
         </select>
-        <span className="muted small" style={{ marginLeft: 'auto' }}>
+        <span className="muted small filtro-contagem">
           {fmtInt(visible.length)} de {fmtInt(students.length)} alunos
         </span>
       </div>
@@ -395,16 +394,16 @@ export function StudentsPage() {
           <table className="tbl">
             <thead>
               <tr>
-                {sortableTh('nome', 'Nome')}
-                <th>Status</th>
-                <th>Plano</th>
-                {sortableTh('mensalidade', 'Mensalidade', 't-right')}
-                <th>Entrada</th>
+                {sortableTh('nome', 'Nome', 'col-nome')}
+                <th className="col-sm-hide">Status</th>
+                <th className="col-sm-hide">Plano</th>
+                {sortableTh('mensalidade', 'Mensalidade', 't-right col-sm-hide')}
+                <th className="col-sm-hide">Entrada</th>
                 {sortableTh('acesso', 'Último acesso')}
-                {sortableTh('freq', 'Freq. média')}
-                {sortableTh('variacao', 'Variação')}
+                {sortableTh('freq', 'Freq. média', 'col-sm-hide')}
+                {sortableTh('variacao', 'Variação', 'col-sm-hide')}
                 {sortableTh('risco', 'Risco')}
-                <th style={{ width: 1 }} />
+                <th className="col-sm-hide" style={{ width: 1 }} />
               </tr>
             </thead>
             <tbody>
@@ -414,11 +413,11 @@ export function StudentsPage() {
                   className="is-clickable"
                   onClick={() => navigate(`/alunos/${s.id}`)}
                 >
-                  <td>{s.nome}</td>
-                  <td>
+                  <td className="col-nome">{s.nome}</td>
+                  <td className="col-sm-hide">
                     <StatusBadge status={s.status} />
                   </td>
-                  <td>
+                  <td className="col-sm-hide">
                     {s.planoNome}
                     {s.promocaoNome !== null && (
                       <span
@@ -430,8 +429,8 @@ export function StudentsPage() {
                       </span>
                     )}
                   </td>
-                  <td className="num t-right">{fmtCurrency(s.mensalidadeCentavos)}</td>
-                  <td className="t-muted">{fmtDate(s.dataEntrada)}</td>
+                  <td className="num t-right col-sm-hide">{fmtCurrency(s.mensalidadeCentavos)}</td>
+                  <td className="t-muted col-sm-hide">{fmtDate(s.dataEntrada)}</td>
                   <td title={s.lastAccessAt !== null ? fmtDateTime(s.lastAccessAt) : undefined}>
                     {s.daysSinceLastAccess === null ? (
                       <span className="t-muted">nunca</span>
@@ -439,14 +438,14 @@ export function StudentsPage() {
                       fmtDaysAgo(s.daysSinceLastAccess)
                     )}
                   </td>
-                  <td className="num">{fmtFreq(s.baselineWeekly ?? s.recentWeekly)}</td>
-                  <td className="num" style={variationStyle(s.variation)}>
+                  <td className="num col-sm-hide">{fmtFreq(s.baselineWeekly ?? s.recentWeekly)}</td>
+                  <td className="num col-sm-hide" style={variationStyle(s.variation)}>
                     {fmtVariation(s.variation)}
                   </td>
                   <td>
                     <RiskBadge risk={s.risk} />
                   </td>
-                  <td>
+                  <td className="col-sm-hide">
                     <button
                       type="button"
                       className="btn btn--ghost btn--sm"

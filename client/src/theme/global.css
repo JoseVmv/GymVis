@@ -151,6 +151,106 @@ select {
   min-height: 100%;
 }
 
+/* ─────────────────────────────────────────── Barra de topo e gaveta (celular)
+
+   No desktop nada disto existe: a barra e o véu ficam escondidos e o menu
+   lateral segue fixo. As regras de aparição estão na consulta de 860px. */
+
+.topbar {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.topbar__menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: var(--r-control);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 110ms ease;
+}
+
+.topbar__menu:hover {
+  background: var(--surface-2);
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  font-stretch: 106%;
+  letter-spacing: -0.01em;
+}
+
+/* Os três risquinhos viram X: o botão diz em que estado a gaveta está. */
+.burger line {
+  transition: transform 240ms cubic-bezier(0.32, 0.72, 0, 1), opacity 140ms ease;
+  transform-origin: center;
+}
+
+.burger.is-open .burger__top {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.burger.is-open .burger__mid {
+  opacity: 0;
+}
+
+.burger.is-open .burger__bot {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.scrim {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(8, 9, 8, 0.62);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 240ms ease;
+}
+
+.scrim.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Fechar a gaveta: só aparece no celular, onde ela existe. */
+.side__close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  border: 0;
+  border-radius: var(--r-chip);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.side__close:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
 .side {
   position: sticky;
   top: 0;
@@ -889,6 +989,14 @@ select {
 .select option {
   background: var(--surface-2);
   color: var(--ink);
+}
+
+.filtro-busca {
+  width: 260px;
+}
+
+.filtro-contagem {
+  margin-left: auto;
 }
 
 .form-error {
@@ -1692,71 +1800,50 @@ table.tbl {
     flex-direction: column;
   }
 
-  .side {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    height: auto;
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    padding: 9px 14px;
-    border-right: 0;
-    border-bottom: 1px solid var(--line-soft);
-    gap: 10px;
+  /* A faixa rolável virou gaveta. Seis destinos numa tira horizontal obrigam
+     a rolar para descobrir que existe "Configurações"; a gaveta mostra todos
+     de uma vez, que é como um app se comporta. */
+  .topbar {
+    display: flex;
   }
 
-  .side__brand {
-    padding: 0 6px 0 0;
+  .scrim {
+    display: block;
+  }
+
+  .side {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    height: 100dvh;
+    width: clamp(230px, 62vw, 310px);
+    padding: 14px 10px 16px;
+    border-right: 1px solid var(--line);
+    box-shadow: 6px 0 28px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* Fechada: fora da tela e fora da ordem de tabulação. */
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: transform 240ms cubic-bezier(0.32, 0.72, 0, 1), visibility 240ms;
+  }
+
+  .side.is-open {
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .side__close {
+    display: flex;
   }
 
   .side__academy {
-    padding: 0;
-    margin: 0;
-    border-bottom: 0;
-    max-width: 150px;
+    padding-bottom: 12px;
   }
-
-  .side__user {
-    display: none;
-  }
-
-  .side__nav {
-    flex-direction: row;
-    gap: 2px;
-    /* Falta espaço? A navegação rola; o botão de sair nunca sai da tela. */
-    min-width: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .side__nav::-webkit-scrollbar {
-    display: none;
-  }
-
-  .side__link.is-active::before {
-    display: none;
-  }
-
-  .side__link--secondary {
-    margin-top: 0;
-    padding-top: 8px;
-  }
-
-  .side__link--secondary::after {
-    display: none;
-  }
-
 
   .side__foot {
-    margin-top: 0;
-    margin-left: auto;
-    padding-top: 0;
-    flex-shrink: 0;
-  }
-
-  .side__logout {
-    width: auto;
+    padding-top: 16px;
   }
 
   .main {
@@ -1797,20 +1884,60 @@ table.tbl {
     padding: 17px 16px;
   }
 
-  /* São seis destinos: o nome da marca sai e o menu vira uma faixa rolável. */
-  .side__brand span,
-  .side__academy {
+  /* Alvos de toque: numa tela pequena o dedo precisa de mais que 30px. */
+  .side__link {
+    padding: 11px 10px;
+  }
+
+  /* Dez colunas num celular viram duas colunas e uma barra de rolagem lateral:
+     o dono arrasta a tabela para descobrir o que já era a pergunta dele. Ficam
+     as três que respondem "quem está sumindo"; o resto está a um toque de
+     distância, na ficha do aluno. */
+  .col-sm-hide {
     display: none;
   }
 
-  .side {
-    padding: 9px 10px;
-    gap: 6px;
+  .tbl th,
+  .tbl td {
+    padding: 11px 10px;
   }
 
-  .side__link {
-    padding: 6px 8px;
-    font-size: 13px;
+  /* Nome longo trunca em vez de empurrar "Risco" para fora da tela. */
+  .col-nome {
+    max-width: 44vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Filtros: a busca toma a linha, os seletores dividem a seguinte, e a
+     contagem desce para a sua, em vez de disputar espaço com o seletor. */
+  .filtro-busca {
+    width: 100%;
+  }
+
+  .filtro-contagem {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .filtro-busca + .select,
+  .filtro-busca ~ .select {
+    flex: 1 1 45%;
+    min-width: 0;
+  }
+
+  /* Nome em cima, ausência e mensalidade embaixo: três colunas não cabem. */
+  .roster__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 2px;
+  }
+
+  .roster__name {
+    grid-column: 1 / -1;
+  }
+
+  .roster__money {
+    text-align: right;
   }
 
   .cat-bars__row {
