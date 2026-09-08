@@ -1,4 +1,4 @@
-import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+import { index, integer, real, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 /**
  * Esquema declarativo do banco — a descrição de referência das tabelas.
@@ -57,9 +57,56 @@ export const plans = sqliteTable(
       .references(() => academies.id),
     nome: text('nome').notNull(),
     valorCentavos: integer('valor_centavos').notNull(),
+    /** Meses cobrados de uma vez: 1 = mensal, 12 = anual. */
+    duracaoMeses: integer('duracao_meses').notNull().default(1),
   },
   (t) => [index('plans_academy_idx').on(t.academyId)],
 );
+
+export const promotions = sqliteTable(
+  'promotions',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    academyId: integer('academy_id')
+      .notNull()
+      .references(() => academies.id),
+    nome: text('nome').notNull(),
+    descontoCentavos: integer('desconto_centavos').notNull().default(0),
+    ativa: integer('ativa').notNull().default(1),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [index('promotions_academy_idx').on(t.academyId)],
+);
+
+export const expenses = sqliteTable(
+  'expenses',
+  {
+    id: integer('id').primaryKey({ autoIncrement: true }),
+    academyId: integer('academy_id')
+      .notNull()
+      .references(() => academies.id),
+    descricao: text('descricao').notNull(),
+    categoria: text('categoria').notNull(),
+    valorCentavos: integer('valor_centavos').notNull(),
+    /** 'YYYY-MM-DD' */
+    data: text('data').notNull(),
+    createdAt: integer('created_at').notNull(),
+  },
+  (t) => [index('expenses_academy_data_idx').on(t.academyId, t.data)],
+);
+
+/** Limiares de risco por academia; ausente = padrões de config/risk.ts. */
+export const academySettings = sqliteTable('academy_settings', {
+  academyId: integer('academy_id')
+    .primaryKey()
+    .references(() => academies.id),
+  inactivityMedium: integer('inactivity_medium').notNull(),
+  inactivityHigh: integer('inactivity_high').notNull(),
+  inactivityCritical: integer('inactivity_critical').notNull(),
+  frequencyDropMedium: real('frequency_drop_medium').notNull(),
+  frequencyDropHigh: real('frequency_drop_high').notNull(),
+  updatedAt: integer('updated_at').notNull(),
+});
 
 export const students = sqliteTable(
   'students',
@@ -71,6 +118,7 @@ export const students = sqliteTable(
     planoId: integer('plano_id')
       .notNull()
       .references(() => plans.id),
+    promocaoId: integer('promocao_id').references(() => promotions.id),
     nome: text('nome').notNull(),
     email: text('email'),
     telefone: text('telefone'),

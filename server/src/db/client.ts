@@ -74,4 +74,49 @@ CREATE TABLE IF NOT EXISTS access_events (
 );
 CREATE INDEX IF NOT EXISTS access_aluno_ts_idx ON access_events(aluno_id, timestamp);
 CREATE INDEX IF NOT EXISTS access_academy_ts_idx ON access_events(academy_id, timestamp);
+
+CREATE TABLE IF NOT EXISTS expenses (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  academy_id INTEGER NOT NULL REFERENCES academies(id),
+  descricao TEXT NOT NULL,
+  categoria TEXT NOT NULL,
+  valor_centavos INTEGER NOT NULL,
+  data TEXT NOT NULL,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS expenses_academy_data_idx ON expenses(academy_id, data);
+
+CREATE TABLE IF NOT EXISTS promotions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  academy_id INTEGER NOT NULL REFERENCES academies(id),
+  nome TEXT NOT NULL,
+  desconto_centavos INTEGER NOT NULL DEFAULT 0,
+  ativa INTEGER NOT NULL DEFAULT 1,
+  created_at INTEGER NOT NULL
+);
+CREATE INDEX IF NOT EXISTS promotions_academy_idx ON promotions(academy_id);
+
+CREATE TABLE IF NOT EXISTS academy_settings (
+  academy_id INTEGER PRIMARY KEY REFERENCES academies(id),
+  inactivity_medium INTEGER NOT NULL,
+  inactivity_high INTEGER NOT NULL,
+  inactivity_critical INTEGER NOT NULL,
+  frequency_drop_medium REAL NOT NULL,
+  frequency_drop_high REAL NOT NULL,
+  updated_at INTEGER NOT NULL
+);
 `);
+
+/**
+ * Migrações aditivas de colunas. O SQLite não tem ADD COLUMN IF NOT EXISTS,
+ * então a existência é checada antes — mantém bancos antigos utilizáveis.
+ */
+function addColumnIfMissing(table: string, column: string, definition: string): void {
+  const cols = sqlite.pragma(`table_info(${table})`) as { name: string }[];
+  if (!cols.some((c) => c.name === column)) {
+    sqlite.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
+
+addColumnIfMissing('students', 'promocao_id', 'INTEGER REFERENCES promotions(id)');
+addColumnIfMissing('plans', 'duracao_meses', 'INTEGER NOT NULL DEFAULT 1');

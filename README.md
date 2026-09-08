@@ -11,9 +11,22 @@ registrados e responde às perguntas que importam para o dono:
 - Quanto de receita mensal está potencialmente em risco?
 - Como está a retenção das turmas de entrada?
 
+- Quanto a academia faturou e quanto gastou no período?
+
 Cada alerta do painel é clicável e abre a lista de alunos já filtrada por
 aquele critério. A página **Sobre**, dentro do próprio app, explica ao dono da
 academia como cada número é calculado.
+
+## Telas
+
+| Tela              | O que faz                                                              |
+| ----------------- | ---------------------------------------------------------------------- |
+| **Visão geral**   | Indicadores do período, alertas clicáveis, receita em risco e gráficos |
+| **Alunos**        | Listagem com filtros e busca, cadastro e edição manual                 |
+| **Rendimentos**   | Faturamento estimado pelas mensalidades, despesas e resultado          |
+| **Retenção**      | Coortes por mês de entrada e curva média                               |
+| **Configurações** | Planos, promoções, limiares de risco e nome da academia                |
+| **Sobre**         | Explicação do produto para o dono da academia                          |
 
 Este é um protótipo local: todos os dados ficam em um banco SQLite dentro do
 projeto e nada depende de APIs externas.
@@ -117,8 +130,9 @@ GymVis/
 │       └── seed/          # gerador de dados fictícios realistas
 └── client/                # React + Vite + Recharts
     └── src/
-        ├── pages/         # dashboard, alunos, perfil, retenção, sobre, login
-        ├── components/    # UI base (cards, badges, tabelas, shell)
+        ├── pages/         # painel, alunos, rendimentos, retenção,
+        │                  # configurações, sobre, login
+        ├── components/    # UI base (cards, badges, tabelas, modais, formulários)
         ├── charts/        # wrappers de gráfico padronizados
         ├── api/           # cliente HTTP tipado
         ├── auth/          # contexto de autenticação
@@ -139,11 +153,11 @@ mas nenhum indicador as utiliza).
 - **Variação**: (recente − histórica) ÷ histórica.
 - **Dias sem acesso**: contados em dias de calendário — um acesso ontem à
   noite é "há 1 dia", não "hoje".
-- **Risco de evasão** (regras transparentes em `server/src/config/risk.ts`;
-  as faixas dos alertas do painel ficam em `server/src/config/alerts.ts`.
-  Ambas chegam à interface por `GET /api/config`, então o painel e a página
-  Sobre escrevem seus rótulos a partir dos limiares reais — mudou o arquivo
-  de configuração, mudou o texto na tela):
+- **Risco de evasão** — os padrões de fábrica ficam em
+  `server/src/config/risk.ts`, mas cada academia ajusta os limiares na tela de
+  Configurações (guardados em `academy_settings`). Painel e página Sobre leem
+  esses valores por `GET /api/config`, então mudar a regra muda também o texto
+  exibido:
   - `LOW` — comportamento normal;
   - `MEDIUM` — 7+ dias sem acesso ou queda de frequência ≥ 30%;
   - `HIGH` — 10+ dias sem acesso ou queda ≥ 50%;
@@ -156,6 +170,10 @@ mas nenhum indicador as utiliza).
 - **Frequência média do período**: cada janela é dividida pela base
   matriculada vigente nela — usar o plantel de hoje nas duas faria a
   comparação esconder metade da queda numa academia em crescimento.
+- **Faturamento**: soma das mensalidades de quem estava matriculado em cada
+  mês. Não existe registro de pagamento, então é uma estimativa; alunos
+  inadimplentes aparecem em coluna separada, porque foram cobrados mas o
+  dinheiro não entrou. As despesas, essas sim, são lançadas e persistidas.
 - **Gráficos semanais**: mostram apenas semanas fechadas. A semana em curso
   apareceria como um colapso de frequência que ainda não aconteceu.
 

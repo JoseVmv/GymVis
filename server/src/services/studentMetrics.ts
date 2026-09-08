@@ -2,6 +2,7 @@ import type { RiskLevel, StudentStatus } from '@gymvis/shared';
 import { classifyRisk, riskConfig } from '../config/risk';
 import { sqlite } from '../db/client';
 import { MS_PER_DAY, calendarDaysBetween, floorDaysBetween, parseDateStr } from '../lib/dates';
+import { getRiskRules } from './settings';
 
 /**
  * Métricas derivadas por aluno — implementação única usada por students,
@@ -15,7 +16,10 @@ export interface StudentMetrics {
   email: string | null;
   telefone: string | null;
   status: StudentStatus;
+  planoId: number;
   planoNome: string;
+  promocaoId: number | null;
+  promocaoNome: string | null;
   mensalidadeCentavos: number;
   dataEntrada: string;
   dataSaida: string | null;
@@ -48,14 +52,19 @@ interface StudentRow {
   data_entrada: string;
   data_saida: string | null;
   mensalidade_centavos: number;
+  plano_id: number;
   plano_nome: string;
+  promocao_id: number | null;
+  promocao_nome: string | null;
 }
 
 const studentsStmt = sqlite.prepare(`
   SELECT s.id, s.nome, s.email, s.telefone, s.status, s.data_entrada, s.data_saida,
-         s.mensalidade_centavos, p.nome AS plano_nome
+         s.mensalidade_centavos, s.plano_id, p.nome AS plano_nome,
+         s.promocao_id, pr.nome AS promocao_nome
   FROM students s
   JOIN plans p ON p.id = s.plano_id
+  LEFT JOIN promotions pr ON pr.id = s.promocao_id
   WHERE s.academy_id = ?
   ORDER BY s.nome COLLATE NOCASE
 `);
@@ -98,6 +107,7 @@ export function enrolledCountAt(academyId: number, dateStr: string): number {
 }
 
 export function computeStudentMetrics(academyId: number, now = new Date()): StudentMetrics[] {
+  const rules = getRiskRules(academyId);
   const nowMs = now.getTime();
   const recentStartMs = nowMs - riskConfig.recentWindowDays * MS_PER_DAY;
   const baselineStartMs = recentStartMs - riskConfig.baselineWindowDays * MS_PER_DAY;
@@ -150,13 +160,16 @@ export function computeStudentMetrics(academyId: number, now = new Date()): Stud
         ? (recentWeekly - baselineWeekly) / baselineWeekly
         : null;
 
-    const { level, reasons } = classifyRisk({
-      status: row.status,
-      daysSinceLastAccess,
-      daysSinceJoin,
-      baselineWeekly,
-      recentWeekly,
-    });
+    const { level, reasons } = classifyRisk(
+      {
+        status: row.status,
+        daysSinceLastAccess,
+        daysSinceJoin,
+        baselineWeekly,
+        recentWeekly,
+      },
+      rules,
+    );
 
     return {
       id: row.id,
@@ -164,7 +177,10 @@ export function computeStudentMetrics(academyId: number, now = new Date()): Stud
       email: row.email,
       telefone: row.telefone,
       status: row.status,
+      planoId: row.plano_id,
       planoNome: row.plano_nome,
+      promocaoId: row.promocao_id,
+      promocaoNome: row.promocao_nome,
       mensalidadeCentavos: row.mensalidade_centavos,
       dataEntrada: row.data_entrada,
       dataSaida: row.data_saida,

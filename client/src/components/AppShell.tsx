@@ -2,7 +2,9 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { Logo } from './ui';
 
-function NavIcon({ name }: { name: 'overview' | 'students' | 'retention' | 'about' }) {
+type IconName = 'overview' | 'students' | 'finance' | 'retention' | 'settings' | 'about';
+
+function NavIcon({ name }: { name: IconName }) {
   const paths = {
     overview: (
       <>
@@ -24,6 +26,28 @@ function NavIcon({ name }: { name: 'overview' | 'students' | 'retention' | 'abou
         <path d="M7.5 13.5 11 10l3 3 5.5-5.5" fill="none" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
       </>
     ),
+    finance: (
+      <>
+        <path d="M12 3v18" fill="none" strokeWidth="1.8" strokeLinecap="round" />
+        <path
+          d="M16.5 7H10a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6H7"
+          fill="none"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+      </>
+    ),
+    settings: (
+      <>
+        <circle cx="12" cy="12" r="3.1" fill="none" strokeWidth="1.8" />
+        <path
+          d="M12 2.8v2.4M12 18.8v2.4M4.5 12H2.1M21.9 12h-2.4M6.7 6.7 5 5M19 19l-1.7-1.7M6.7 17.3 5 19M19 5l-1.7 1.7"
+          fill="none"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+      </>
+    ),
     about: (
       <>
         <circle cx="12" cy="12" r="8.5" fill="none" strokeWidth="1.8" />
@@ -38,6 +62,24 @@ function NavIcon({ name }: { name: 'overview' | 'students' | 'retention' | 'abou
     </svg>
   );
 }
+
+interface NavItem {
+  to: string;
+  label: string;
+  icon: IconName;
+  end?: boolean;
+  /** Separado do bloco principal por uma linha, no menu lateral. */
+  secondary?: boolean;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { to: '/', label: 'Visão geral', icon: 'overview', end: true },
+  { to: '/alunos', label: 'Alunos', icon: 'students' },
+  { to: '/rendimentos', label: 'Rendimentos', icon: 'finance' },
+  { to: '/retencao', label: 'Retenção', icon: 'retention' },
+  { to: '/configuracoes', label: 'Configurações', icon: 'settings', secondary: true },
+  { to: '/sobre', label: 'Sobre', icon: 'about' },
+];
 
 export function AppShell() {
   const { user, logout } = useAuth();
@@ -56,22 +98,19 @@ export function AppShell() {
           <span>GymVis</span>
         </div>
         <nav className="side__nav">
-          <NavLink to="/" end className={({ isActive }) => `side__link${isActive ? ' is-active' : ''}`}>
-            <NavIcon name="overview" />
-            Visão geral
-          </NavLink>
-          <NavLink to="/alunos" className={({ isActive }) => `side__link${isActive ? ' is-active' : ''}`}>
-            <NavIcon name="students" />
-            Alunos
-          </NavLink>
-          <NavLink to="/retencao" className={({ isActive }) => `side__link${isActive ? ' is-active' : ''}`}>
-            <NavIcon name="retention" />
-            Retenção
-          </NavLink>
-          <NavLink to="/sobre" className={({ isActive }) => `side__link${isActive ? ' is-active' : ''}`}>
-            <NavIcon name="about" />
-            Sobre
-          </NavLink>
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) =>
+                `side__link${isActive ? ' is-active' : ''}${item.secondary ? ' side__link--secondary' : ''}`
+              }
+            >
+              <NavIcon name={item.icon} />
+              {item.label}
+            </NavLink>
+          ))}
         </nav>
         <div className="side__foot">
           <div className="side__academy">{user?.academyNome}</div>

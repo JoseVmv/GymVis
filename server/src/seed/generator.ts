@@ -863,7 +863,7 @@ export function generateAcademyData(opts: GenerateOptions): {
   validateAndReport(drafts, today, now);
 
   const insertPlan = sqlite.prepare(
-    'INSERT INTO plans (academy_id, nome, valor_centavos) VALUES (?, ?, ?)',
+    'INSERT INTO plans (academy_id, nome, valor_centavos, duracao_meses) VALUES (?, ?, ?, ?)',
   );
   const insertStudent = sqlite.prepare(
     'INSERT INTO students (academy_id, plano_id, nome, email, telefone, data_entrada, data_saida, status, mensalidade_centavos) ' +
@@ -876,7 +876,9 @@ export function generateAcademyData(opts: GenerateOptions): {
   let accessEvents = 0;
   const persist = sqlite.transaction(() => {
     const planIds = PLAN_SPECS.map((p) =>
-      Number(insertPlan.run(opts.academyId, p.nome, p.valorCentavos).lastInsertRowid),
+      Number(
+        insertPlan.run(opts.academyId, p.nome, p.valorCentavos, p.commitmentMonths).lastInsertRowid,
+      ),
     );
     for (const draft of drafts) {
       const studentId = Number(

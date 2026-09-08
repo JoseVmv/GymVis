@@ -2,7 +2,11 @@ import type { RiskLevel, StudentStatus } from '@gymvis/shared';
 
 /**
  * Regras de classificação de risco de evasão — transparentes e centralizadas.
- * Ajuste os thresholds aqui; nenhum número mágico deve existir fora deste arquivo.
+ *
+ * Estes são os padrões de fábrica. Cada academia pode sobrescrever os limiares
+ * de inatividade e de queda em Configurações (tabela academy_settings); as
+ * janelas de cálculo continuam fixas, porque mudá-las alteraria o significado
+ * das métricas comparadas entre academias.
  */
 export const riskConfig = {
   /** Janela "recente": últimas 4 semanas completas. */
@@ -30,6 +34,17 @@ export interface RiskInput {
   recentWeekly: number;
 }
 
+/** Limiares em vigor para uma academia (os configuráveis). */
+export interface RiskRules {
+  inactivity: { medium: number; high: number; critical: number };
+  frequencyDrop: { medium: number; high: number };
+}
+
+export const defaultRiskRules: RiskRules = {
+  inactivity: { ...riskConfig.inactivity },
+  frequencyDrop: { ...riskConfig.frequencyDrop },
+};
+
 export interface RiskResult {
   level: RiskLevel | null;
   /** Explicações legíveis, em pt-BR, na ordem de gravidade. */
@@ -40,12 +55,13 @@ export interface RiskResult {
  * Classifica o risco de evasão de um aluno. Retorna level null para alunos
  * cancelados ou pausados (risco não se aplica).
  */
-export function classifyRisk(input: RiskInput): RiskResult {
+export function classifyRisk(input: RiskInput, rules: RiskRules = defaultRiskRules): RiskResult {
   if (input.status === 'cancelado' || input.status === 'pausado') {
     return { level: null, reasons: [] };
   }
 
-  const { inactivity, frequencyDrop, minBaselineWeeklyForDrop } = riskConfig;
+  const { inactivity, frequencyDrop } = rules;
+  const { minBaselineWeeklyForDrop } = riskConfig;
   const neverAccessed = input.daysSinceLastAccess === null;
   const days = input.daysSinceLastAccess ?? input.daysSinceJoin;
   const reasons: string[] = [];

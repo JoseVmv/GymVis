@@ -3,18 +3,41 @@ import type { CSSProperties, ReactNode } from 'react';
 
 /* ------------------------------------------------------------------ Marca */
 
-export function Logo({ size = 24 }: { size?: number }) {
+/**
+ * Marca do GymVis: um kettlebell sobre as barras de um gráfico.
+ *
+ * O gradiente vai do azul-petróleo ao azul-marinho, como na arte original.
+ * O id do gradiente é sufixado para não colidir quando há duas logos na tela.
+ */
+export function Logo({ size = 24, idSuffix = 'main' }: { size?: number; idSuffix?: string }) {
+  const gradId = `gymvis-grad-${idSuffix}`;
   return (
-    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden>
-      <rect width="32" height="32" rx="8" fill="#151514" />
-      <path
-        d="M6 19h5l3-9 4 13 3-7h5"
-        fill="none"
-        stroke="#fff"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden focusable="false">
+      <defs>
+        <linearGradient id={gradId} x1="6" y1="42" x2="42" y2="6" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#12303f" />
+          <stop offset="0.55" stopColor="#1d5a72" />
+          <stop offset="1" stopColor="#2e8b96" />
+        </linearGradient>
+      </defs>
+      <g fill={`url(#${gradId})`}>
+        {/* Barras do gráfico, flanqueando o haltere, sobre a linha de base. */}
+        <rect x="2.5" y="30" width="5" height="11" rx="1.2" />
+        <rect x="8.8" y="23.5" width="5" height="17.5" rx="1.2" />
+        <rect x="34" y="26.5" width="5" height="14.5" rx="1.2" />
+        <rect x="40" y="19" width="5" height="22" rx="1.2" />
+        <rect x="2.5" y="41.5" width="42.5" height="3" rx="1.4" />
+        {/* Haltere: alça larga e corpo em forma de sino (não um círculo, que
+            de longe vira cadeado). */}
+        <path
+          d="M17.6 24.5v-4.7a6.4 6.4 0 0 1 12.8 0v4.7"
+          fill="none"
+          stroke={`url(#${gradId})`}
+          strokeWidth="3.2"
+          strokeLinecap="round"
+        />
+        <path d="M20.2 23.2c0 3.4-4.7 4.6-4.7 9a8.5 8.5 0 0 0 17 0c0-4.4-4.7-5.6-4.7-9Z" />
+      </g>
     </svg>
   );
 }

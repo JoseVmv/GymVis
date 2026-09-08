@@ -3,6 +3,8 @@ import { AuthProvider, PublicOnly, RequireAuth } from './auth/AuthContext';
 import { AppShell } from './components/AppShell';
 import { AboutPage } from './pages/AboutPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { FinancePage } from './pages/FinancePage';
+import { SettingsPage } from './pages/SettingsPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { RetentionPage } from './pages/RetentionPage';
@@ -23,7 +25,9 @@ export function App() {
               <Route index element={<DashboardPage />} />
               <Route path="/alunos" element={<StudentsPage />} />
               <Route path="/alunos/:id" element={<StudentProfilePage />} />
+              <Route path="/rendimentos" element={<FinancePage />} />
               <Route path="/retencao" element={<RetentionPage />} />
+              <Route path="/configuracoes" element={<SettingsPage />} />
               <Route path="/sobre" element={<AboutPage />} />
             </Route>
           </Route>

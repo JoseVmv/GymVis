@@ -1,8 +1,12 @@
 import type { StudentProfileResponse } from '@gymvis/shared';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ApiError, api } from '../api/client';
 import { ColumnChart } from '../charts/Charts';
+import { Field } from '../components/fields';
+import { ConfirmDialog, Modal } from '../components/Modal';
+import { StudentFormModal, type StudentFormValues } from '../components/StudentForm';
+import { centavosToInput } from '../components/fields';
 import {
   Card,
   EmptyState,
@@ -39,6 +43,47 @@ export function StudentProfilePage() {
   const [student, setStudent] = useState<StudentProfileResponse | null>(null);
   const [failed, setFailed] = useState<LoadFailure | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const [formOpen, setFormOpen] = useState(false);
+  const [accessOpen, setAccessOpen] = useState(false);
+  const [accessValue, setAccessValue] = useState('');
+  const [accessError, setAccessError] = useState<string | null>(null);
+  const [savingAccess, setSavingAccess] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const navigate = useNavigate();
+
+  const reload = () => setAttempt((n) => n + 1);
+
+  async function handleAddAccess() {
+    const ms = Date.parse(accessValue);
+    if (!Number.isFinite(ms)) {
+      setAccessError('Informe a data e a hora do acesso.');
+      return;
+    }
+    setSavingAccess(true);
+    setAccessError(null);
+    try {
+      await api.addAccess(studentId, { timestamp: ms });
+      setAccessOpen(false);
+      setAccessValue('');
+      reload();
+    } catch (err) {
+      setAccessError(err instanceof Error ? err.message : 'Não foi possível registrar.');
+    } finally {
+      setSavingAccess(false);
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true);
+    try {
+      await api.deleteStudent(studentId);
+      navigate('/alunos');
+    } catch {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
 
   useEffect(() => {
     setStudent(null);
@@ -114,9 +159,27 @@ export function StudentProfilePage() {
         title={student.nome}
         subtitle={subtitle}
         action={
-          <div className="row">
+          <div className="row row--wrap">
             <StatusBadge status={student.status} />
             <RiskBadge risk={student.risk} />
+            {student.promocaoNome !== null && (
+              <span className="badge badge--accent" title={`Promoção: ${student.promocaoNome}`}>
+                {student.promocaoNome}
+              </span>
+            )}
+            <button type="button" className="btn btn--sm" onClick={() => setFormOpen(true)}>
+              Editar
+            </button>
+            <button type="button" className="btn btn--sm" onClick={() => setAccessOpen(true)}>
+              Registrar acesso
+            </button>
+            <button
+              type="button"
+              className="btn btn--sm"
+              onClick={() => setConfirmDelete(true)}
+            >
+              Excluir
+            </button>
           </div>
         }
       />
@@ -206,6 +269,78 @@ export function StudentProfilePage() {
           )}
         </Card>
       </div>
+
+      <StudentFormModal
+        open={formOpen}
+        initial={
+          {
+            id: student.id,
+            nome: student.nome,
+            email: student.email ?? '',
+            telefone: student.telefone ?? '',
+            planoId: student.planoId,
+            promocaoId: student.promocaoId,
+            mensalidade: centavosToInput(student.mensalidadeCentavos),
+            dataEntrada: student.dataEntrada,
+            dataSaida: student.dataSaida ?? '',
+            status: student.status,
+          } satisfies StudentFormValues
+        }
+        onClose={() => setFormOpen(false)}
+        onSaved={reload}
+      />
+
+      <Modal
+        open={accessOpen}
+        title="Registrar acesso"
+        onClose={() => setAccessOpen(false)}
+        width={400}
+        footer={
+          <>
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setAccessOpen(false)}
+              disabled={savingAccess}
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className="btn btn--primary"
+              onClick={handleAddAccess}
+              disabled={savingAccess}
+            >
+              {savingAccess ? 'Registrando…' : 'Registrar'}
+            </button>
+          </>
+        }
+      >
+        {accessError && <div className="form-error">{accessError}</div>}
+        <p className="muted small" style={{ lineHeight: 1.5 }}>
+          Use quando a catraca não registrou a entrada do aluno.
+        </p>
+        <Field label="Data e hora">
+          {(id) => (
+            <input
+              id={id}
+              type="datetime-local"
+              className="input"
+              value={accessValue}
+              onChange={(e) => setAccessValue(e.target.value)}
+            />
+          )}
+        </Field>
+      </Modal>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Excluir aluno"
+        message={`${student.nome} e todo o histórico de acessos dele serão removidos permanentemente.`}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmDelete(false)}
+        busy={deleting}
+      />
     </>
   );
 }

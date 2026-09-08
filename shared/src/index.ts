@@ -14,6 +14,17 @@ export type StudentStatus = 'ativo' | 'pausado' | 'cancelado' | 'inadimplente';
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 export type EventType = 'entrada' | 'saida';
 
+/** Categorias de despesa da academia. */
+export type ExpenseCategory =
+  | 'manutencao'
+  | 'equipamento'
+  | 'folha'
+  | 'aluguel'
+  | 'utilidades'
+  | 'marketing'
+  | 'limpeza'
+  | 'outros';
+
 // ---------------------------------------------------------------- Autenticação
 
 export interface SessionUser {
@@ -198,7 +209,11 @@ export interface StudentListItem {
   id: number;
   nome: string;
   status: StudentStatus;
+  planoId: number;
   planoNome: string;
+  /** Promoção em que o aluno se inscreveu, quando houver. */
+  promocaoId: number | null;
+  promocaoNome: string | null;
   mensalidadeCentavos: number;
   dataEntrada: string;
   dataSaida: string | null;
@@ -280,4 +295,127 @@ export interface DemoDataResponse {
   ok: true;
   students: number;
   accessEvents: number;
+}
+
+// ---------------------------------------------------------------- Rendimentos
+
+export interface Expense {
+  id: number;
+  descricao: string;
+  categoria: ExpenseCategory;
+  valorCentavos: number;
+  /** 'YYYY-MM-DD' */
+  data: string;
+}
+
+export interface ExpensePayload {
+  descricao: string;
+  categoria: ExpenseCategory;
+  valorCentavos: number;
+  data: string;
+}
+
+export interface FinanceMonth {
+  month: string;
+  label: string;
+  /** Mensalidades dos matriculados no fim do mês, exceto inadimplentes. */
+  receitaCentavos: number;
+  /** Mensalidades de quem estava inadimplente: cobrado, mas não recebido. */
+  inadimplenciaCentavos: number;
+  despesasCentavos: number;
+  /** receita − despesas. */
+  resultadoCentavos: number;
+}
+
+export interface FinanceResponse {
+  periodMonths: number;
+  meses: FinanceMonth[];
+  /** Totais do período coberto por `meses`. */
+  receitaCentavos: number;
+  inadimplenciaCentavos: number;
+  despesasCentavos: number;
+  resultadoCentavos: number;
+  /** Faturamento projetado do mês corrente, pelos matriculados de hoje. */
+  receitaMensalAtualCentavos: number;
+  /** Ticket médio dos matriculados hoje. */
+  ticketMedioCentavos: number;
+  despesasPorCategoria: { categoria: ExpenseCategory; valorCentavos: number }[];
+  expenses: Expense[];
+}
+
+// -------------------------------------------------------- Planos e promoções
+
+export interface Plan {
+  id: number;
+  nome: string;
+  valorCentavos: number;
+  /** Meses cobrados de uma vez. 1 = mensal. */
+  duracaoMeses: number;
+  /** Quantos alunos usam este plano (impede exclusão quando > 0). */
+  alunos: number;
+}
+
+export interface PlanPayload {
+  nome: string;
+  valorCentavos: number;
+  duracaoMeses: number;
+}
+
+export interface Promotion {
+  id: number;
+  nome: string;
+  /** Desconto aplicado sobre o valor do plano, em centavos. */
+  descontoCentavos: number;
+  ativa: boolean;
+  alunos: number;
+}
+
+export interface PromotionPayload {
+  nome: string;
+  descontoCentavos: number;
+  ativa: boolean;
+}
+
+// ------------------------------------------------------------ Configurações
+
+/** Limiares editáveis pela academia; o servidor traz os padrões de fábrica. */
+export interface AcademySettings {
+  academiaNome: string;
+  inactivityMedium: number;
+  inactivityHigh: number;
+  inactivityCritical: number;
+  frequencyDropMedium: number;
+  frequencyDropHigh: number;
+}
+
+export interface SettingsResponse {
+  settings: AcademySettings;
+  /** Valores de fábrica, para o botão "restaurar padrão". */
+  defaults: AcademySettings;
+  plans: Plan[];
+  promotions: Promotion[];
+}
+
+// -------------------------------------------------- Cadastro manual de aluno
+
+export interface StudentPayload {
+  nome: string;
+  email: string | null;
+  telefone: string | null;
+  planoId: number;
+  promocaoId: number | null;
+  mensalidadeCentavos: number;
+  dataEntrada: string;
+  dataSaida: string | null;
+  status: StudentStatus;
+}
+
+export interface StudentMutationResponse {
+  id: number;
+}
+
+/** Registro manual de um acesso (quando a catraca falhou, por exemplo). */
+export interface AccessPayload {
+  /** epoch ms */
+  timestamp: number;
 }

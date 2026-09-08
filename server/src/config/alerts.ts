@@ -1,5 +1,5 @@
 import type { AlertThresholds } from '@gymvis/shared';
-import { riskConfig } from './risk';
+import { riskConfig, type RiskRules } from './risk';
 
 /**
  * Faixas dos alertas do dashboard. São um requisito de produto próprio, não
@@ -13,3 +13,19 @@ export const alertConfig: AlertThresholds = {
   frequencyDrop: riskConfig.frequencyDrop.medium,
   minBaselineWeekly: riskConfig.minBaselineWeeklyForDrop,
 };
+
+/**
+ * Faixas de alerta de uma academia. A faixa mais grave e o limiar de queda
+ * acompanham o que o dono configurou para o risco, para o painel não dizer
+ * "30 dias" enquanto a classificação usa outro número.
+ */
+export function alertThresholdsFor(rules: RiskRules): AlertThresholds {
+  const first = rules.inactivity.medium;
+  const second = Math.max(first + 1, alertConfig.inactivityDays[1]);
+  const third = Math.max(second + 1, rules.inactivity.critical);
+  return {
+    inactivityDays: [first, second, third],
+    frequencyDrop: rules.frequencyDrop.medium,
+    minBaselineWeekly: alertConfig.minBaselineWeekly,
+  };
+}

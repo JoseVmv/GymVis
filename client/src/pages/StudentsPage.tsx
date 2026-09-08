@@ -9,6 +9,8 @@ import type {
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client';
+import { centavosToInput } from '../components/fields';
+import { StudentFormModal, type StudentFormValues } from '../components/StudentForm';
 import {
   EmptyState,
   PageHeader,
@@ -153,6 +155,45 @@ export function StudentsPage() {
   const alerta = parseAlert(searchParams.get('alerta'));
 
   const [attempt, setAttempt] = useState(0);
+  const [formOpen, setFormOpen] = useState(false);
+  const [formInitial, setFormInitial] = useState<StudentFormValues | undefined>(undefined);
+  const [editLoadingId, setEditLoadingId] = useState<number | null>(null);
+
+  const reload = () => setAttempt((n) => n + 1);
+
+  function openNewStudent() {
+    setFormInitial(undefined);
+    setFormOpen(true);
+  }
+
+  /**
+   * A listagem não carrega e-mail nem telefone; abrir a edição com eles em
+   * branco apagaria o contato do aluno ao salvar. Por isso busca o cadastro
+   * completo antes de abrir o formulário.
+   */
+  async function openEditStudent(s: StudentListItem) {
+    setEditLoadingId(s.id);
+    try {
+      const full = await api.student(s.id);
+      setFormInitial({
+        id: full.id,
+        nome: full.nome,
+        email: full.email ?? '',
+        telefone: full.telefone ?? '',
+        planoId: full.planoId,
+        promocaoId: full.promocaoId,
+        mensalidade: centavosToInput(full.mensalidadeCentavos),
+        dataEntrada: full.dataEntrada,
+        dataSaida: full.dataSaida ?? '',
+        status: full.status,
+      });
+      setFormOpen(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível abrir o aluno.');
+    } finally {
+      setEditLoadingId(null);
+    }
+  }
 
   useEffect(() => {
     let alive = true;
@@ -275,7 +316,15 @@ export function StudentsPage() {
 
   return (
     <>
-      <PageHeader title="Alunos" subtitle={subtitle} />
+      <PageHeader
+        title="Alunos"
+        subtitle={subtitle}
+        action={
+          <button type="button" className="btn btn--primary" onClick={openNewStudent}>
+            Novo aluno
+          </button>
+        }
+      />
 
       <div className="row row--wrap" style={{ marginBottom: 12 }}>
         <input
@@ -346,6 +395,7 @@ export function StudentsPage() {
                 {sortableTh('freq', 'Freq. média')}
                 {sortableTh('variacao', 'Variação')}
                 {sortableTh('risco', 'Risco')}
+                <th style={{ width: 1 }} />
               </tr>
             </thead>
             <tbody>
@@ -359,7 +409,18 @@ export function StudentsPage() {
                   <td>
                     <StatusBadge status={s.status} />
                   </td>
-                  <td>{s.planoNome}</td>
+                  <td>
+                    {s.planoNome}
+                    {s.promocaoNome !== null && (
+                      <span
+                        className="badge badge--accent"
+                        style={{ marginLeft: 6 }}
+                        title={`Promoção: ${s.promocaoNome}`}
+                      >
+                        Promoção
+                      </span>
+                    )}
+                  </td>
                   <td className="num t-right">{fmtCurrency(s.mensalidadeCentavos)}</td>
                   <td className="t-muted">{fmtDate(s.dataEntrada)}</td>
                   <td title={s.lastAccessAt !== null ? fmtDateTime(s.lastAccessAt) : undefined}>
@@ -376,12 +437,32 @@ export function StudentsPage() {
                   <td>
                     <RiskBadge risk={s.risk} />
                   </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--sm"
+                      disabled={editLoadingId === s.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void openEditStudent(s);
+                      }}
+                    >
+                      {editLoadingId === s.id ? 'Abrindo…' : 'Editar'}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <StudentFormModal
+        open={formOpen}
+        initial={formInitial}
+        onClose={() => setFormOpen(false)}
+        onSaved={reload}
+      />
     </>
   );
 }

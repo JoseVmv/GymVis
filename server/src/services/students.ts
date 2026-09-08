@@ -5,8 +5,9 @@ import type {
   StudentsResponse,
   WeeklyFrequencyPoint,
 } from '@gymvis/shared';
-import { alertConfig } from '../config/alerts';
+import { alertThresholdsFor } from '../config/alerts';
 import { sqlite } from '../db/client';
+import { getRiskRules } from './settings';
 import {
   addDays,
   dayMonthLabel,
@@ -25,7 +26,10 @@ function toListItem(m: StudentMetrics): StudentListItem {
     id: m.id,
     nome: m.nome,
     status: m.status,
+    planoId: m.planoId,
     planoNome: m.planoNome,
+    promocaoId: m.promocaoId,
+    promocaoNome: m.promocaoNome,
     mensalidadeCentavos: m.mensalidadeCentavos,
     dataEntrada: m.dataEntrada,
     dataSaida: m.dataSaida,
@@ -42,7 +46,7 @@ function toListItem(m: StudentMetrics): StudentListItem {
 export function listStudents(academyId: number): StudentsResponse {
   return {
     students: computeStudentMetrics(academyId).map(toListItem),
-    alertThresholds: alertConfig,
+    alertThresholds: alertThresholdsFor(getRiskRules(academyId)),
     generatedAt: Date.now(),
   };
 }

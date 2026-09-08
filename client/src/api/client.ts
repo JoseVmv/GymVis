@@ -1,14 +1,23 @@
 import type {
+  AcademySettings,
+  AccessPayload,
   AlertsResponse,
   AuthResponse,
   ChartsResponse,
   DemoDataResponse,
+  ExpensePayload,
+  FinanceResponse,
   LoginPayload,
   MetricsConfigResponse,
   OverviewResponse,
+  PlanPayload,
+  PromotionPayload,
   RegisterPayload,
   RetentionResponse,
   RevenueAtRiskResponse,
+  SettingsResponse,
+  StudentMutationResponse,
+  StudentPayload,
   StudentProfileResponse,
   StudentsResponse,
 } from '@gymvis/shared';
@@ -21,6 +30,14 @@ export class ApiError extends Error {
     super(message);
     this.name = 'ApiError';
   }
+}
+
+/** Requisição que envia corpo JSON (ou nenhum, no caso do DELETE). */
+function send<T>(method: 'POST' | 'PUT' | 'DELETE', path: string, body?: unknown): Promise<T> {
+  return request<T>(path, {
+    method,
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -69,4 +86,34 @@ export const api = {
   retention: () => request<RetentionResponse>('/retention'),
   generateDemoData: () =>
     request<DemoDataResponse>('/demo-data', { method: 'POST' }),
+
+  // Rendimentos
+  finance: (months: number) => request<FinanceResponse>(`/finance?months=${months}`),
+  createExpense: (payload: ExpensePayload) => send<{ id: number }>('POST', '/expenses', payload),
+  updateExpense: (id: number, payload: ExpensePayload) =>
+    send<{ id: number }>('PUT', `/expenses/${id}`, payload),
+  deleteExpense: (id: number) => send<{ ok: true }>('DELETE', `/expenses/${id}`),
+
+  // Configurações
+  settings: () => request<SettingsResponse>('/settings'),
+  saveSettings: (payload: AcademySettings) =>
+    send<SettingsResponse>('PUT', '/settings', payload),
+  createPlan: (payload: PlanPayload) => send<{ id: number }>('POST', '/plans', payload),
+  updatePlan: (id: number, payload: PlanPayload) =>
+    send<{ id: number }>('PUT', `/plans/${id}`, payload),
+  deletePlan: (id: number) => send<{ ok: true }>('DELETE', `/plans/${id}`),
+  createPromotion: (payload: PromotionPayload) =>
+    send<{ id: number }>('POST', '/promotions', payload),
+  updatePromotion: (id: number, payload: PromotionPayload) =>
+    send<{ id: number }>('PUT', `/promotions/${id}`, payload),
+  deletePromotion: (id: number) => send<{ ok: true }>('DELETE', `/promotions/${id}`),
+
+  // Cadastro manual
+  createStudent: (payload: StudentPayload) =>
+    send<StudentMutationResponse>('POST', '/students', payload),
+  updateStudent: (id: number, payload: StudentPayload) =>
+    send<StudentMutationResponse>('PUT', `/students/${id}`, payload),
+  deleteStudent: (id: number) => send<{ ok: true }>('DELETE', `/students/${id}`),
+  addAccess: (studentId: number, payload: AccessPayload) =>
+    send<{ ok: true }>('POST', `/students/${studentId}/accesses`, payload),
 };
