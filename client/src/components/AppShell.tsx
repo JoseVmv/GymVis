@@ -97,6 +97,12 @@ export function AppShell() {
           <Logo size={26} />
           <span>GymVis</span>
         </div>
+        {/* O nome da academia fica acima do menu: o painel é da operação do
+            dono, e o GymVis é só o instrumento que ele usa. */}
+        <div className="side__academy">
+          <div className="side__academy-name">{user?.academyNome}</div>
+          <div className="side__user">{user?.email}</div>
+        </div>
         <nav className="side__nav">
           {NAV_ITEMS.map((item) => (
             <NavLink
@@ -113,8 +119,6 @@ export function AppShell() {
           ))}
         </nav>
         <div className="side__foot">
-          <div className="side__academy">{user?.academyNome}</div>
-          <div className="side__user">{user?.email}</div>
           <button type="button" className="btn btn--sm side__logout" onClick={handleLogout}>
             Sair
           </button>

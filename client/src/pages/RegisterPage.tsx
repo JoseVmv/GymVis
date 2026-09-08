@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiError } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
-import { Logo } from '../components/ui';
+import { AuthLayout } from '../components/AuthLayout';
 
 export function RegisterPage() {
   const { register } = useAuth();
@@ -38,72 +38,70 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="auth">
-      <div className="auth__box">
-        <div className="auth__brand">
-          <Logo size={30} />
-          <span>GymVis</span>
+    <AuthLayout>
+      <form className="auth__card" onSubmit={handleSubmit}>
+        <h1 className="auth__title">Criar sua conta</h1>
+        <div className="field">
+          <label htmlFor="reg-nome">Seu nome</label>
+          <input
+            id="reg-nome"
+            className="input"
+            type="text"
+            autoComplete="name"
+            required
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+          />
         </div>
-        <form className="auth__card" onSubmit={handleSubmit}>
-          <h1 className="auth__title">Criar sua conta</h1>
-          <div className="field">
-            <label htmlFor="reg-nome">Seu nome</label>
-            <input
-              id="reg-nome"
-              className="input"
-              type="text"
-              autoComplete="name"
-              required
-              value={nome}
-              onChange={(e) => setNome(e.target.value)}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="reg-academia">Nome da academia</label>
-            <input
-              id="reg-academia"
-              className="input"
-              type="text"
-              autoComplete="organization"
-              required
-              value={academiaNome}
-              onChange={(e) => setAcademiaNome(e.target.value)}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="reg-email">E-mail</label>
-            <input
-              id="reg-email"
-              className="input"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="reg-senha">Senha</label>
-            <input
-              id="reg-senha"
-              className="input"
-              type="password"
-              autoComplete="new-password"
-              required
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
-            <span className="small muted">Mínimo de 8 caracteres</span>
-          </div>
-          {error && <div className="form-error">{error}</div>}
-          <button type="submit" className="btn btn--primary btn--full" disabled={submitting}>
-            {submitting ? 'Criando conta…' : 'Criar conta'}
-          </button>
-        </form>
-        <div className="auth__foot">
-          Já tem conta? <Link to="/login">Entrar</Link>
+        <div className="field">
+          <label htmlFor="reg-academia">Nome da academia</label>
+          <input
+            id="reg-academia"
+            className="input"
+            type="text"
+            autoComplete="organization"
+            required
+            value={academiaNome}
+            onChange={(e) => setAcademiaNome(e.target.value)}
+          />
         </div>
+        <div className="field">
+          <label htmlFor="reg-email">E-mail</label>
+          <input
+            id="reg-email"
+            className="input"
+            type="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="field">
+          <label htmlFor="reg-senha">Senha</label>
+          <input
+            id="reg-senha"
+            className="input"
+            type="password"
+            autoComplete="new-password"
+            required
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+          />
+          <span className="field__hint">Mínimo de 8 caracteres</span>
+        </div>
+        {error && <div className="form-error">{error}</div>}
+        <button type="submit" className="btn btn--primary btn--full" disabled={submitting}>
+          {submitting ? 'Criando conta…' : 'Criar conta'}
+        </button>
+      </form>
+      <div className="auth__foot">
+        Já tem conta? <Link to="/login">Entrar</Link>
       </div>
-    </div>
+      <div className="auth__hint">
+        Sua academia começa vazia. Dá para gerar dados de exemplo pelo painel e conhecer o produto
+        antes de cadastrar aluno.
+      </div>
+    </AuthLayout>
   );
 }

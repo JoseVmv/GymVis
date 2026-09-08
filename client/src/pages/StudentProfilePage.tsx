@@ -9,7 +9,9 @@ import { StudentFormModal, type StudentFormValues } from '../components/StudentF
 import { centavosToInput } from '../components/fields';
 import {
   Card,
+  Chevron,
   EmptyState,
+  MetaCounts,
   PageHeader,
   PageLoading,
   RiskBadge,
@@ -139,19 +141,26 @@ export function StudentProfilePage() {
   }
   if (!student) return <PageLoading />;
 
-  const subtitle =
-    `${student.planoNome} · ${fmtCurrency(student.mensalidadeCentavos)} /mês` +
-    ` · entrou em ${fmtDate(student.dataEntrada)}` +
-    (student.dataSaida ? ` · saiu em ${fmtDate(student.dataSaida)}` : '');
+  const subtitle = (
+    <MetaCounts
+      items={[
+        { value: student.planoNome, label: 'plano' },
+        { value: fmtCurrency(student.mensalidadeCentavos), label: 'por mês' },
+        { value: fmtDate(student.dataEntrada), label: 'de entrada' },
+        ...(student.dataSaida ? [{ value: fmtDate(student.dataSaida), label: 'de saída' }] : []),
+      ]}
+    />
+  );
 
   const weeklyData = student.weeklySeries.map((w) => ({ label: w.label, value: w.count }));
   const accesses = student.recentAccesses.slice(0, MAX_ACCESS_ROWS);
 
   return (
     <>
-      <div style={{ marginBottom: 8 }}>
+      <div style={{ marginBottom: 10 }}>
         <Link to="/alunos" className="btn btn--ghost btn--sm">
-          ← Alunos
+          <Chevron direction="left" />
+          Alunos
         </Link>
       </div>
 
@@ -242,7 +251,7 @@ export function StudentProfilePage() {
             <EmptyState title="Nenhum acesso registrado" />
           ) : (
             <>
-              <div className="table-wrap mt-12">
+              <div className="table-wrap table-wrap--narrow mt-12">
                 <table className="tbl">
                   <thead>
                     <tr>

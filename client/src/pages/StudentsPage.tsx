@@ -13,6 +13,7 @@ import { centavosToInput } from '../components/fields';
 import { StudentFormModal, type StudentFormValues } from '../components/StudentForm';
 import {
   EmptyState,
+  MetaCounts,
   PageHeader,
   PageLoading,
   RiskBadge,
@@ -294,7 +295,15 @@ export function StudentsPage() {
   }
   if (!data) return <PageLoading />;
 
-  const subtitle = `${fmtInt(counts.matriculados)} matriculados · ${fmtInt(counts.pausados)} pausados · ${fmtInt(counts.cancelados)} cancelados`;
+  const subtitle = (
+    <MetaCounts
+      items={[
+        { value: fmtInt(counts.matriculados), label: 'matriculados' },
+        { value: fmtInt(counts.pausados), label: 'pausados' },
+        { value: fmtInt(counts.cancelados), label: 'cancelados' },
+      ]}
+    />
+  );
   const labels = alertLabels(data.alertThresholds);
 
   if (students.length === 0) {

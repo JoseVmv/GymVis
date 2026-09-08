@@ -2,20 +2,30 @@ import type { RetentionResponse } from '@gymvis/shared';
 import { useEffect, useState, type CSSProperties } from 'react';
 import { api } from '../api/client';
 import { TrendLineChart } from '../charts/Charts';
-import { blueRamp, inkOnRampStep } from '../charts/palette';
+import { RETENTION_FLOOR, retentionRamp, retentionStep, inkOnRampStep } from '../charts/palette';
 import { Card, EmptyState, PageHeader, PageLoading } from '../components/ui';
 import { fmtInt } from '../lib/format';
-
-/** Mapeia 0..1 para um passo 0..9 da rampa azul. */
-function rampStep(v: number): number {
-  return Math.max(0, Math.min(blueRamp.length - 1, Math.round(v * (blueRamp.length - 1))));
-}
 
 const cellBase: CSSProperties = {
   padding: '6px 8px',
   minWidth: 52,
   textAlign: 'center',
 };
+
+/** A escala do mapa de calor, dita em voz alta — o piso não se adivinha. */
+function RampLegend() {
+  return (
+    <div className="ramp-legend">
+      <span className="muted small">{Math.round(RETENTION_FLOOR * 100)}% ou menos</span>
+      <div className="ramp-legend__scale" aria-hidden>
+        {retentionRamp.map((color) => (
+          <span key={color} style={{ background: color }} />
+        ))}
+      </div>
+      <span className="muted small">100%</span>
+    </div>
+  );
+}
 
 /** Corta a cauda de nulls e converte a curva média para pontos percentuais. */
 function buildCurve(averageCurve: (number | null)[]): { label: string; value: number }[] {
@@ -101,7 +111,7 @@ export function RetentionPage() {
           subtitle="Cada linha é o mês de entrada; cada coluna, meses desde a entrada"
         >
           <div className="table-wrap mt-12">
-            <table className="tbl">
+            <table className="tbl tbl--sticky">
               <thead>
                 <tr>
                   <th>Coorte</th>
@@ -122,14 +132,14 @@ export function RetentionPage() {
                     {columns.map((i) => {
                       const v = c.values[i] ?? null;
                       if (v === null) return <td key={i} style={cellBase} />;
-                      const step = rampStep(v);
+                      const step = retentionStep(v);
                       return (
                         <td
                           key={i}
                           style={{
                             ...cellBase,
-                            background: blueRamp[step],
-                            color: inkOnRampStep(step),
+                            background: retentionRamp[step],
+                            color: inkOnRampStep(),
                             fontVariantNumeric: 'tabular-nums',
                           }}
                         >
@@ -142,6 +152,7 @@ export function RetentionPage() {
               </tbody>
             </table>
           </div>
+          <RampLegend />
         </Card>
 
         <Card title="Curva média de retenção" subtitle="Média das coortes com dado disponível">

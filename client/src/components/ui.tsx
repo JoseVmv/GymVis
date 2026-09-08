@@ -6,7 +6,9 @@ import type { CSSProperties, ReactNode } from 'react';
 /**
  * Marca do GymVis: um kettlebell sobre as barras de um gráfico.
  *
- * O gradiente vai do azul-petróleo ao azul-marinho, como na arte original.
+ * O gradiente da arte original ia do azul-marinho ao petróleo, que somem no
+ * fundo escuro. Aqui ele sobe do mesmo petróleo até o verde da marca — a
+ * forma é a de sempre, a cor entrou na paleta nova.
  * O id do gradiente é sufixado para não colidir quando há duas logos na tela.
  */
 export function Logo({ size = 24, idSuffix = 'main' }: { size?: number; idSuffix?: string }) {
@@ -15,9 +17,9 @@ export function Logo({ size = 24, idSuffix = 'main' }: { size?: number; idSuffix
     <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden focusable="false">
       <defs>
         <linearGradient id={gradId} x1="6" y1="42" x2="42" y2="6" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#12303f" />
-          <stop offset="0.55" stopColor="#1d5a72" />
-          <stop offset="1" stopColor="#2e8b96" />
+          <stop offset="0" stopColor="#2b7f8a" />
+          <stop offset="0.5" stopColor="#339078" />
+          <stop offset="1" stopColor="#54c98d" />
         </linearGradient>
       </defs>
       <g fill={`url(#${gradId})`}>
@@ -38,6 +40,35 @@ export function Logo({ size = 24, idSuffix = 'main' }: { size?: number; idSuffix
         />
         <path d="M20.2 23.2c0 3.4-4.7 4.6-4.7 9a8.5 8.5 0 0 0 17 0c0-4.4-4.7-5.6-4.7-9Z" />
       </g>
+    </svg>
+  );
+}
+
+/* ------------------------------------------------------------------ Ícones */
+
+/** Seta de avanço. Ícone, e não um '→' colado no texto do link. */
+export function Chevron({
+  className,
+  direction = 'right',
+}: {
+  className?: string;
+  direction?: 'left' | 'right';
+}) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+      focusable="false"
+    >
+      <path d={direction === 'right' ? 'm9 18 6-6-6-6' : 'm15 18-6-6 6-6'} />
     </svg>
   );
 }
@@ -209,7 +240,7 @@ export function PageHeader({
   action,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: ReactNode;
   action?: ReactNode;
 }) {
   return (
@@ -220,5 +251,22 @@ export function PageHeader({
       </div>
       {action}
     </header>
+  );
+}
+
+/**
+ * Contagens do subtítulo, ditas com o número em destaque e o rótulo apagado.
+ * Substitui as cadeias 'A · B · C', que se leem como uma frase só e escondem
+ * justamente o que interessa — os números.
+ */
+export function MetaCounts({ items }: { items: { value: string; label: string }[] }) {
+  return (
+    <span className="meta-counts">
+      {items.map((item) => (
+        <span key={item.label} className="meta-counts__item">
+          <strong>{item.value}</strong> {item.label}
+        </span>
+      ))}
+    </span>
   );
 }

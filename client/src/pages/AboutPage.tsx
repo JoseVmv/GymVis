@@ -86,16 +86,16 @@ export function AboutPage() {
             </div>
             <div className="store-hero__meta">
               <span>
-                <strong>Análise</strong>
-                Categoria
+                <strong>Só leitura</strong>
+                Não controla a catraca
               </span>
               <span>
-                <strong>1.0</strong>
-                Versão
+                <strong>Sem biometria</strong>
+                Nem digital, nem foto
               </span>
               <span>
-                <strong>Você</strong>
-                Só a sua academia
+                <strong>Sua academia</strong>
+                Ninguém mais vê os dados
               </span>
             </div>
           </div>
@@ -162,7 +162,7 @@ export function AboutPage() {
         </div>
         <p className="muted small" style={{ marginTop: 10, lineHeight: 1.5 }}>
           São regras simples, sem inteligência artificial. Você muda esses números quando quiser em{' '}
-          <Link to="/configuracoes" style={{ color: 'var(--accent-strong)', fontWeight: 550 }}>
+          <Link to="/configuracoes" className="link">
             Configurações
           </Link>
           .
@@ -174,17 +174,7 @@ export function AboutPage() {
           O sistema pega os alunos matriculados com risco alto ou crítico e soma a mensalidade de
           cada um. Se são 24 pessoas de R$ 130, a receita em risco é R$ 3.120.
         </p>
-        <div
-          style={{
-            marginTop: 12,
-            padding: '10px 12px',
-            borderRadius: 'var(--radius-sm)',
-            background: 'var(--warn-wash)',
-            color: 'var(--warn-text)',
-            fontSize: 12.5,
-            lineHeight: 1.5,
-          }}
-        >
+        <div className="note" style={{ marginTop: 14 }}>
           É uma estimativa, não dinheiro perdido. Ninguém cancelou ainda — é exatamente por isso
           que dá para agir.
         </div>

@@ -4,14 +4,17 @@ import type {
   ChartsResponse,
   OverviewResponse,
   RevenueAtRiskResponse,
+  StudentListItem,
+  StudentsResponse,
 } from '@gymvis/shared';
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api, ApiError } from '../api/client';
-import { ColumnChart, FlowChart, RiskDistributionBars, TrendLineChart } from '../charts/Charts';
+import { ColumnChart, FlowChart, RiskLoadBar, TrendLineChart } from '../charts/Charts';
 import { riskColor } from '../charts/palette';
 import {
   Card,
+  Chevron,
   EmptyState,
   PageHeader,
   PageLoading,
@@ -28,11 +31,15 @@ const periodOptions: { value: Period; label: string }[] = [
   { value: 90, label: '90 dias' },
 ];
 
+/** Quantos nomes cabem na abertura sem virar uma segunda listagem. */
+const ROSTER_SIZE = 5;
+
 interface DashboardData {
   overview: OverviewResponse;
   alerts: AlertsResponse;
   revenue: RevenueAtRiskResponse;
   charts: ChartsResponse;
+  students: StudentsResponse;
 }
 
 type Delta = { text: string; tone: 'good' | 'bad' | 'neutral' } | null;
@@ -79,16 +86,113 @@ function errorMessage(err: unknown): string {
   return err instanceof ApiError ? err.message : 'Não foi possível carregar os dados.';
 }
 
-const linkStyle = { color: 'var(--accent-strong)', fontWeight: 550 } as const;
+/** Só matriculados: quem já cancelou ou pausou não representa receita em risco. */
+function atRiskRoster(students: StudentListItem[]): StudentListItem[] {
+  return students
+    .filter(
+      (s) =>
+        (s.status === 'ativo' || s.status === 'inadimplente') &&
+        (s.risk === 'HIGH' || s.risk === 'CRITICAL'),
+    )
+    .sort((a, b) => (b.daysSinceLastAccess ?? b.daysSinceJoin) - (a.daysSinceLastAccess ?? a.daysSinceJoin))
+    .slice(0, ROSTER_SIZE);
+}
 
-function RiskLine({ color, children }: { color: string; children: ReactNode }) {
+function gapLabel(s: StudentListItem): string {
+  const dias = s.daysSinceLastAccess ?? s.daysSinceJoin;
+  if (s.daysSinceLastAccess === null) return `nunca veio · ${dias} d`;
+  return `${fmtInt(dias)} dias sem vir`;
+}
+
+/**
+ * A abertura do painel: o valor em risco e as pessoas que o compõem, lado a
+ * lado. Sozinho o número é abstrato; com os nomes ao lado, o dono reconhece
+ * quem são — e a lista é o caminho para agir.
+ */
+function RiskHero({
+  revenue,
+  roster,
+}: {
+  revenue: RevenueAtRiskResponse;
+  roster: StudentListItem[];
+}) {
+  const emRisco = revenue.highCount + revenue.criticalCount;
+  const share =
+    revenue.activeMonthlyRevenueCentavos > 0
+      ? revenue.totalCentavos / revenue.activeMonthlyRevenueCentavos
+      : 0;
+
   return (
-    <div className="small" style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-      <span
-        style={{ width: 8, height: 8, borderRadius: 999, background: color, flexShrink: 0 }}
-      />
-      <span>{children}</span>
-    </div>
+    <section className="risk-hero">
+      <div className="risk-hero__money">
+        <div className="risk-hero__label">Receita em risco</div>
+        <div className="risk-hero__figure">{fmtCurrency(revenue.totalCentavos)}</div>
+        <p className="risk-hero__note">
+          {emRisco === 0
+            ? 'Ninguém matriculado está sumindo agora. É o melhor número desta tela.'
+            : `${fmtInt(emRisco)} ${emRisco === 1 ? 'aluno que continua pagando e parou' : 'alunos que continuam pagando e pararam'} de aparecer.`}
+        </p>
+
+        {emRisco > 0 && (
+          <div className="risk-split">
+            <Link className="risk-split__row" to="/alunos?risco=HIGH">
+              <span className="load__dot" style={{ background: riskColor.HIGH }} />
+              <span>Risco alto</span>
+              <span className="risk-split__count">{fmtInt(revenue.highCount)}</span>
+              <span className="risk-split__money">{fmtCurrency(revenue.highCentavos)}</span>
+            </Link>
+            <Link className="risk-split__row" to="/alunos?risco=CRITICAL">
+              <span className="load__dot" style={{ background: riskColor.CRITICAL }} />
+              <span>Risco crítico</span>
+              <span className="risk-split__count">{fmtInt(revenue.criticalCount)}</span>
+              <span className="risk-split__money">{fmtCurrency(revenue.criticalCentavos)}</span>
+            </Link>
+          </div>
+        )}
+
+        <div className="risk-hero__share">
+          <div className="risk-hero__track">
+            <div
+              className="risk-hero__fill"
+              style={{ width: `${Math.min(100, Math.round(share * 100))}%` }}
+            />
+          </div>
+          <div className="risk-hero__caption">
+            {Math.round(share * 100)}% da receita mensal de{' '}
+            {fmtCurrency(revenue.activeMonthlyRevenueCentavos)}
+          </div>
+        </div>
+      </div>
+
+      <div className="risk-hero__roster">
+        <div className="risk-hero__label">Quem está sumindo</div>
+        {roster.length === 0 ? (
+          <p className="risk-hero__note">
+            Nenhum aluno matriculado passou dos limiares de risco no momento.
+          </p>
+        ) : (
+          <ul className="roster">
+            {roster.map((s) => (
+              <li key={s.id}>
+                <Link className="roster__row" to={`/alunos/${s.id}`}>
+                  <span className="roster__name">{s.nome}</span>
+                  <span className="roster__gap">{gapLabel(s)}</span>
+                  <span className="roster__money">{fmtCurrency(s.mensalidadeCentavos)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+        <Link className="roster__all" to="/alunos?risco=EM_RISCO">
+          <span>
+            {emRisco > ROSTER_SIZE
+              ? `Ver os ${fmtInt(emRisco)} alunos em risco`
+              : 'Ver a lista de alunos'}
+          </span>
+          <Chevron />
+        </Link>
+      </div>
+    </section>
   );
 }
 
@@ -99,20 +203,7 @@ function AlertRow({ label, count, alert }: { label: string; count: number; alert
       <span>{label}</span>
       <span className="alert-row__count">
         {fmtInt(count)}
-        <svg
-          className="alert-row__chevron"
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden
-        >
-          <path d="m9 18 6-6-6-6" />
-        </svg>
+        <Chevron className="alert-row__chevron" />
       </span>
     </Link>
   );
@@ -128,13 +219,14 @@ export function DashboardPage() {
 
   const loadAll = useCallback(async (periodDays: Period) => {
     try {
-      const [overview, alerts, revenue, charts] = await Promise.all([
+      const [overview, alerts, revenue, charts, students] = await Promise.all([
         api.overview(periodDays),
         api.alerts(),
         api.revenueAtRisk(),
         api.charts(),
+        api.students(),
       ]);
-      setData({ overview, alerts, revenue, charts });
+      setData({ overview, alerts, revenue, charts, students });
       setError(null);
     } catch (err) {
       setError(errorMessage(err));
@@ -205,7 +297,7 @@ export function DashboardPage() {
 
   if (!data) return <PageLoading />;
 
-  const { overview, alerts, revenue, charts } = data;
+  const { overview, alerts, revenue, charts, students } = data;
 
   // Os rótulos dos alertas seguem os limiares configurados no servidor.
   const [first, second, third] = alerts.thresholds.inactivityDays;
@@ -251,7 +343,9 @@ export function DashboardPage() {
         }
       />
 
-      <div className={`stat-grid${refetching ? ' is-refetching' : ''}`}>
+      <RiskHero revenue={revenue} roster={atRiskRoster(students.students)} />
+
+      <div className={`stat-grid mt-12${refetching ? ' is-refetching' : ''}`}>
         <StatTile
           label="Alunos ativos"
           value={fmtInt(overview.activeStudents)}
@@ -288,34 +382,8 @@ export function DashboardPage() {
         />
       </div>
 
-      <div className="grid-3 mt-12">
-        <Card
-          title="Receita em risco"
-          subtitle="Estimativa: mensalidades de alunos com risco alto ou crítico"
-        >
-          <div className="hero-figure" style={{ marginTop: 10 }}>
-            {fmtCurrency(revenue.totalCentavos)}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 10 }}>
-            <RiskLine color={riskColor.HIGH}>
-              {fmtInt(revenue.highCount)} alunos em risco alto · {fmtCurrency(revenue.highCentavos)}
-            </RiskLine>
-            <RiskLine color={riskColor.CRITICAL}>
-              {fmtInt(revenue.criticalCount)} em risco crítico ·{' '}
-              {fmtCurrency(revenue.criticalCentavos)}
-            </RiskLine>
-          </div>
-          <div className="muted small" style={{ marginTop: 10 }}>
-            de {fmtCurrency(revenue.activeMonthlyRevenueCentavos)} de receita mensal ativa
-          </div>
-          <div style={{ marginTop: 12 }}>
-            <Link className="small" style={linkStyle} to="/alunos?risco=EM_RISCO">
-              Ver alunos em risco
-            </Link>
-          </div>
-        </Card>
-
-        <Card title="Alertas" subtitle="Alunos sumindo da academia">
+      <div className="grid-2 mt-12">
+        <Card title="Alertas" subtitle="Alunos matriculados que pararam de aparecer">
           <div style={{ marginTop: 4 }}>
             <AlertRow
               alert="inativo7"
@@ -338,15 +406,13 @@ export function DashboardPage() {
               count={alerts.frequencyDrop.count}
             />
           </div>
-          <div style={{ marginTop: 10 }}>
-            <Link className="small" style={linkStyle} to="/alunos">
-              Ver todos os alunos
-            </Link>
-          </div>
         </Card>
 
-        <Card title="Distribuição de risco" subtitle="Alunos matriculados por nível">
-          <RiskDistributionBars data={charts.riskDistribution} />
+        <Card
+          title="Carga de risco"
+          subtitle="Todo o plantel matriculado, do comportamento normal ao crítico"
+        >
+          <RiskLoadBar data={charts.riskDistribution} />
         </Card>
       </div>
 

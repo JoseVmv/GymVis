@@ -40,19 +40,41 @@ function send<T>(method: 'POST' | 'PUT' | 'DELETE', path: string, body?: unknown
   });
 }
 
+/** Status usado quando a requisição nem chegou ao servidor. */
+export const STATUS_SEM_RESPOSTA = 0;
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`/api${path}`, {
-    credentials: 'same-origin',
-    headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
-    ...init,
-  });
+  let res: Response;
+  try {
+    res = await fetch(`/api${path}`, {
+      credentials: 'same-origin',
+      headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
+      ...init,
+    });
+  } catch {
+    // O fetch só rejeita quando não houve resposta: servidor fora do ar,
+    // sem rede, DNS. Dizer "algo deu errado" aqui manda o dono da academia
+    // conferir a senha, que não é o problema.
+    throw new ApiError(
+      'Não foi possível falar com o servidor. Verifique sua conexão e tente de novo.',
+      STATUS_SEM_RESPOSTA,
+    );
+  }
+
   if (!res.ok) {
-    let message = 'Algo deu errado. Tente novamente.';
+    let message: string | null = null;
     try {
       const body = (await res.json()) as { error?: string };
       if (body.error) message = body.error;
     } catch {
-      // corpo não-JSON: mantém a mensagem padrão
+      // corpo não-JSON: o servidor caiu antes de formatar a resposta
+    }
+    if (message === null) {
+      // 5xx sem corpo é falha do servidor, não do que o usuário digitou.
+      message =
+        res.status >= 500
+          ? 'O servidor não respondeu. Tente de novo em alguns instantes.'
+          : 'Algo deu errado. Tente novamente.';
     }
     throw new ApiError(message, res.status);
   }

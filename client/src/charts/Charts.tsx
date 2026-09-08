@@ -1,5 +1,6 @@
 import type { FlowPoint, RiskLevel, RiskSlice } from '@gymvis/shared';
 import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Bar,
   BarChart,
@@ -47,7 +48,7 @@ function buildTooltip(
   return function VizTooltip({ active, payload, label }: any) {
     if (!active || !payload?.length) return null;
     const rows: TooltipRow[] = payload.map((p: any) => ({
-      color: (p.color ?? p.fill ?? viz.blue) as string,
+      color: (p.color ?? p.fill ?? viz.green) as string,
       name: String(p.name),
       value: format(transform(Number(p.value))),
     }));
@@ -123,10 +124,10 @@ export function TrendLineChart({
           dataKey="value"
           name={name}
           type="monotone"
-          stroke={viz.blue}
+          stroke={viz.green}
           strokeWidth={2}
           dot={false}
-          activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
+          activeDot={{ r: 4, strokeWidth: 2, stroke: viz.dotRing }}
         />
       </LineChart>
     </ResponsiveContainer>
@@ -167,7 +168,7 @@ export function ColumnChart({
           allowDecimals={false}
         />
         <Tooltip content={buildTooltip(valueFormat)} cursor={{ fill: viz.barCursor }} />
-        <Bar dataKey="value" name={name} fill={viz.blue} radius={[4, 4, 0, 0]} maxBarSize={24} />
+        <Bar dataKey="value" name={name} fill={viz.green} radius={[4, 4, 0, 0]} maxBarSize={24} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -190,7 +191,7 @@ export function FlowChart({ data, height = 220 }: { data: FlowPoint[]; height?: 
       <div className="row row--between" style={{ marginBottom: 6 }}>
         <ChartLegend
           items={[
-            { color: viz.blue, label: 'Novos' },
+            { color: viz.green, label: 'Novos' },
             { color: viz.red, label: 'Cancelamentos' },
           ]}
         />
@@ -219,7 +220,7 @@ export function FlowChart({ data, height = 220 }: { data: FlowPoint[]; height?: 
             cursor={{ fill: viz.barCursor }}
           />
           <ReferenceLine y={0} stroke={viz.axis} strokeWidth={1} />
-          <Bar dataKey="Novos" stackId="flow" fill={viz.blue} radius={[4, 4, 0, 0]} maxBarSize={20} />
+          <Bar dataKey="Novos" stackId="flow" fill={viz.green} radius={[4, 4, 0, 0]} maxBarSize={20} />
           <Bar dataKey="Cancelamentos" stackId="flow" fill={viz.red} radius={[0, 0, 4, 4]} maxBarSize={20} />
         </BarChart>
       </ResponsiveContainer>
@@ -227,36 +228,52 @@ export function FlowChart({ data, height = 220 }: { data: FlowPoint[]; height?: 
   );
 }
 
-/* ------------------------------------------------- Distribuição de risco */
+/* --------------------------------------------------------- Carga de risco */
 
 const riskOrder: RiskLevel[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
 
-export function RiskDistributionBars({ data }: { data: RiskSlice[] }) {
+/**
+ * O plantel inteiro em uma barra só, carregada da esquerda para a direita.
+ *
+ * Quatro barras separadas respondem "quantos há em cada nível"; uma barra
+ * carregada responde "quanto do meu plantel está escorregando", que é a
+ * pergunta do dono. Cada segmento leva à lista já filtrada por aquele nível.
+ */
+export function RiskLoadBar({ data }: { data: RiskSlice[] }) {
   const byLevel = new Map(data.map((s) => [s.level, s.count]));
   const counts = riskOrder.map((level) => byLevel.get(level) ?? 0);
-  const max = Math.max(1, ...counts);
   const total = counts.reduce((a, b) => a + b, 0);
 
+  if (total === 0) {
+    return <p className="muted small mt-12">Nenhum aluno matriculado para classificar.</p>;
+  }
+
   return (
-    <div className="risk-bars">
-      {riskOrder.map((level, i) => {
-        const count = counts[i];
-        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-        return (
-          <div key={level} className="risk-bars__row">
-            <span className="muted">{riskLabel(level)}</span>
-            <div className="risk-bars__track">
-              <div
-                className="risk-bars__fill"
-                style={{ width: `${(count / max) * 100}%`, background: riskColor[level] }}
-              />
-            </div>
-            <span className="risk-bars__count">
-              <strong>{fmtInt(count)}</strong> · {pct}%
-            </span>
-          </div>
-        );
-      })}
+    <div>
+      <div className="load__bar">
+        {riskOrder.map((level, i) =>
+          counts[i] === 0 ? null : (
+            <Link
+              key={level}
+              to={`/alunos?risco=${level}`}
+              className="load__seg"
+              style={{ flexGrow: counts[i], background: riskColor[level] }}
+              aria-label={`${fmtInt(counts[i])} alunos em risco ${riskLabel(level).toLowerCase()}`}
+              title={`${riskLabel(level)}: ${fmtInt(counts[i])}`}
+            />
+          ),
+        )}
+      </div>
+      <div className="load__legend">
+        {riskOrder.map((level, i) => (
+          <Link key={level} to={`/alunos?risco=${level}`} className="load__key">
+            <span className="load__dot" style={{ background: riskColor[level] }} />
+            {riskLabel(level)}
+            <span className="load__count">{fmtInt(counts[i])}</span>
+            <span className="load__pct">{Math.round((counts[i] / total) * 100)}%</span>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
