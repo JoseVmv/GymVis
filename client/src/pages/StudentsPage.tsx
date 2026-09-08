@@ -314,7 +314,7 @@ export function StudentsPage() {
           title="Nenhum aluno cadastrado"
           description="Gere dados de demonstração no painel para explorar a plataforma."
           action={
-            <Link to="/" className="btn btn--sm">
+            <Link to="/painel" className="btn btn--sm">
               Ir para o painel
             </Link>
           }

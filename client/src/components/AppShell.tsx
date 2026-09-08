@@ -77,7 +77,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Visão geral', icon: 'overview', end: true },
+  { to: '/painel', label: 'Visão geral', icon: 'overview', end: true },
   { to: '/alunos', label: 'Alunos', icon: 'students' },
   { to: '/rendimentos', label: 'Rendimentos', icon: 'finance' },
   { to: '/retencao', label: 'Retenção', icon: 'retention' },

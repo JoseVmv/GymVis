@@ -78,10 +78,10 @@ export function RequireAuth() {
   return <Outlet />;
 }
 
-/** Rotas de autenticação — usuário logado é levado ao dashboard. */
+/** Rotas de autenticação — usuário logado é levado ao painel. */
 export function PublicOnly() {
   const { user, loading } = useAuth();
   if (loading) return <FullPageSpinner />;
-  if (user) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/painel" replace />;
   return <Outlet />;
 }

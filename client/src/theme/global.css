@@ -1754,6 +1754,328 @@ table.tbl {
   color: #74d6a0;
 }
 
+/* ══════════════════════════════════════════════════════ Vitrine (deslogado)
+
+   O argumento é o produto: o título enquadra e a tela real entra logo abaixo,
+   em largura cheia. Sem ilustração, sem brilho atrás do print — no escuro, o
+   que separa a captura da página é um fio claro e uma sombra baixa. */
+
+.lp {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.lp__topo {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 32px;
+  background: rgba(30, 30, 29, 0.86);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.lp__marca {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 16px;
+  font-weight: 620;
+  font-stretch: 106%;
+  letter-spacing: -0.015em;
+}
+
+.lp__topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lp main {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ------------------------------------------------------------------- Hero */
+
+.lp__hero {
+  padding: 76px 0 0;
+}
+
+/* A afirmação de um lado, o que fazer com ela do outro. Empilhado, o título
+   ficaria com meia página vazia à direita. */
+.lp__hero-topo {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+  align-items: end;
+  gap: 20px 64px;
+}
+
+.lp__hero-lado {
+  padding-bottom: 6px;
+}
+
+/* O lugar onde a ousadia foi gasta: uma frase que o dono de academia já sabe
+   ser verdade, no corpo mais largo e pesado do Archivo. */
+.lp__titulo {
+  font-size: clamp(34px, 5.6vw, 62px);
+  font-weight: 660;
+  font-stretch: 112%;
+  letter-spacing: -0.038em;
+  line-height: 1.04;
+  max-width: 13ch;
+}
+
+.lp__abertura {
+  margin-top: 0;
+  font-size: clamp(15px, 1.6vw, 18px);
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 56ch;
+}
+
+.lp__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.btn--grande {
+  padding: 12px 22px;
+  font-size: 14.5px;
+  border-radius: 10px;
+}
+
+.lp__nota {
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--ink-3);
+  line-height: 1.55;
+  max-width: 52ch;
+}
+
+.lp__nota strong {
+  color: var(--ink-2);
+  font-weight: 560;
+}
+
+/* ---------------------------------------------------------------- Telas */
+
+.lp__tela {
+  margin: 0;
+}
+
+.lp__tela img {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Cantos suavizados, mas o retângulo continua retângulo. */
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+}
+
+.lp__tela--larga {
+  margin-top: 52px;
+}
+
+.lp__tela--celular img {
+  max-width: 296px;
+  margin: 0 auto;
+  border-radius: 18px;
+}
+
+/* --------------------------------------------------------------- Seções */
+
+.lp__secao {
+  padding: 92px 0 0;
+}
+
+.lp__titulo-secao {
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 640;
+  font-stretch: 108%;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  max-width: 22ch;
+  text-wrap: balance;
+}
+
+.lp__paragrafo {
+  margin-top: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  max-width: 60ch;
+}
+
+.lp__paragrafo--centro {
+  max-width: 66ch;
+}
+
+/* Os três pontos usam a mesma régua da tela de entrar: termo, fio, definição.
+   É o vocabulário visual do produto, não um kit de cartões. */
+.lp__valores {
+  margin: 30px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 34px;
+}
+
+.lp__valores li {
+  padding: 18px 0 4px;
+  border-top: 1px solid var(--line);
+}
+
+.lp__valor-termo {
+  font-size: 15px;
+  font-weight: 600;
+  font-stretch: 104%;
+  letter-spacing: -0.012em;
+}
+
+.lp__valor-texto {
+  margin-top: 7px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-3);
+}
+
+/* Texto e celular lado a lado: a captura é alta e estreita, então pede coluna
+   em vez da largura cheia das outras. */
+.lp__par {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.82fr);
+  align-items: center;
+  gap: 56px;
+}
+
+/* ----------------------------------------------------------- Fechamento */
+
+.lp__fechamento {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px 56px;
+  margin-top: 104px;
+  padding: 44px 0 8px;
+  border-top: 1px solid var(--line);
+}
+
+.lp__fechamento .lp__acoes {
+  margin-top: 0;
+}
+
+.lp__titulo-fecho {
+  font-size: clamp(26px, 3.6vw, 40px);
+  font-weight: 650;
+  font-stretch: 110%;
+  letter-spacing: -0.032em;
+  line-height: 1.1;
+  max-width: 20ch;
+  text-wrap: balance;
+}
+
+.lp__rodape {
+  margin-top: 72px;
+  display: flex;
+  align-items: center;
+  gap: 14px 28px;
+  flex-wrap: wrap;
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 22px 32px 34px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 12.5px;
+  color: var(--ink-3);
+  line-height: 1.55;
+}
+
+.lp__rodape .lp__marca {
+  font-size: 14px;
+}
+
+.lp__rodape p {
+  max-width: 62ch;
+}
+
+@media (max-width: 900px) {
+  .lp__hero-topo,
+  .lp__fechamento {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .lp__titulo {
+    max-width: 15ch;
+  }
+
+  .lp__abertura {
+    margin-top: 20px;
+  }
+
+  .lp__par {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .lp__valores {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .lp__tela--celular img {
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 640px) {
+  .lp__topo,
+  .lp main,
+  .lp__rodape {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .lp__topo {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+
+  .lp__hero {
+    padding-top: 44px;
+  }
+
+  .lp__secao {
+    padding-top: 64px;
+  }
+
+  .lp__fechamento {
+    margin-top: 72px;
+    padding-top: 34px;
+  }
+
+  .lp__tela--larga {
+    margin-top: 34px;
+  }
+
+  .lp__acoes .btn {
+    flex: 1 1 100%;
+  }
+}
+
 /* ════════════════════════════════════════════════════════════════ Responsivo */
 
 @media (max-width: 1180px) {

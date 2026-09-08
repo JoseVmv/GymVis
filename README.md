@@ -127,6 +127,20 @@ pagar o handshake TLS.
 
 Separadamente, se preferir: `npm run dev:server` e `npm run dev:client`.
 
+> O `dev` do servidor usa o watch do próprio Node (`node --watch --import tsx`)
+> e não o `tsx watch`. Sob o `concurrently`, que entrega a saída por pipe em vez
+> de terminal, o `tsx watch` no Windows sobe o processo filho mas ele nunca
+> chega a escutar na porta — a interface abre normalmente e todo `/api` responde
+> 500. Rodando sozinho o `tsx watch` funciona, o que torna a falha confusa de
+> diagnosticar. Se for trocar de volta, confira que `npm run dev` ainda imprime
+> `GymVis API em http://localhost:3001`.
+
+Se a tela de login reclamar que não conseguiu falar com o servidor, quase sempre
+é a porta 3001 sem ninguém escutando ou uma instância antiga do Vite segurando a
+5173 (nesse caso o Vite novo avisa `Port 5173 is in use` e sobe na 5174, mas o
+navegador continua na 5173 antiga). Encerre os processos `node` do projeto e
+suba de novo.
+
 ### Modo produção (um processo só)
 
 ```bash
