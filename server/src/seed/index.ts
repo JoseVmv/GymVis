@@ -8,7 +8,7 @@
  * removidos e regenerados; caso contrário, academia e usuário são criados.
  */
 import { hashPassword } from '../auth/password';
-import { sqlite } from '../db/client';
+import { db, fecharConexao } from '../db/client';
 import { generateAcademyData } from './generator';
 
 const DEMO_EMAIL = 'demo@gymvis.app';
@@ -68,12 +68,13 @@ function fmtDateMs(ms: number): string {
   return `${d.getFullYear()}-${month}-${day}`;
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
 
-  const demoUser = sqlite
-    .prepare('SELECT id, academy_id FROM users WHERE email = ?')
-    .get(DEMO_EMAIL) as { id: number; academy_id: number } | undefined;
+  const demoUser = await db.one<{ id: number; academy_id: number }>(
+    'SELECT id, academy_id FROM users WHERE email = ?',
+    DEMO_EMAIL,
+  );
 
   let academyId: number;
   if (demoUser) {
@@ -81,52 +82,55 @@ function main(): void {
     console.log(`Academia demo encontrada (id ${academyId}); dados anteriores serão substituídos.`);
   } else {
     const now = Date.now();
-    const academy = sqlite
-      .prepare('INSERT INTO academies (nome, created_at) VALUES (?, ?)')
-      .run(DEMO_ACADEMIA, now);
-    academyId = Number(academy.lastInsertRowid);
-    sqlite
-      .prepare(
-        'INSERT INTO users (academy_id, nome, email, password_hash, created_at) VALUES (?, ?, ?, ?, ?)',
-      )
-      .run(academyId, DEMO_USUARIO, DEMO_EMAIL, hashPassword(DEMO_SENHA), now);
+    const academia = await db.one<{ id: number }>(
+      'INSERT INTO academies (nome, created_at) VALUES (?, ?) RETURNING id',
+      DEMO_ACADEMIA,
+      now,
+    );
+    academyId = academia!.id;
+    await db.run(
+      'INSERT INTO users (academy_id, nome, email, password_hash, created_at) VALUES (?, ?, ?, ?, ?)',
+      academyId,
+      DEMO_USUARIO,
+      DEMO_EMAIL,
+      hashPassword(DEMO_SENHA),
+      now,
+    );
     console.log(`Academia '${DEMO_ACADEMIA}' criada (id ${academyId}).`);
   }
 
-  // Limpeza e regeneração na mesma transação: uma falha no meio não pode
-  // deixar a academia demo vazia (better-sqlite3 aninha como savepoint).
-  const reseed = sqlite.transaction((id: number) => {
-    if (demoUser) {
-      sqlite.prepare('DELETE FROM access_events WHERE academy_id = ?').run(id);
-      sqlite.prepare('DELETE FROM students WHERE academy_id = ?').run(id);
-      sqlite.prepare('DELETE FROM plans WHERE academy_id = ?').run(id);
-      sqlite.prepare('DELETE FROM sessions WHERE user_id = ?').run(demoUser.id);
-    }
-    return generateAcademyData({
-      academyId: id,
-      students: args.students,
-      months: args.months,
-      seed: args.seed,
-    });
+  // A limpeza vai antes da geração. O gerador abre a própria transação, então
+  // os DELETEs ficam em outra: se a geração falhar, rode o seed de novo.
+  if (demoUser) {
+    await db.run('DELETE FROM access_events WHERE academy_id = ?', academyId);
+    await db.run('UPDATE students SET promocao_id = NULL WHERE academy_id = ?', academyId);
+    await db.run('DELETE FROM students WHERE academy_id = ?', academyId);
+    await db.run('DELETE FROM promotions WHERE academy_id = ?', academyId);
+    await db.run('DELETE FROM plans WHERE academy_id = ?', academyId);
+    await db.run('DELETE FROM expenses WHERE academy_id = ?', academyId);
+    await db.run('DELETE FROM sessions WHERE user_id = ?', demoUser.id);
+  }
+
+  const result = await generateAcademyData({
+    academyId,
+    students: args.students,
+    months: args.months,
+    seed: args.seed,
   });
 
-  const result = reseed(academyId);
-
-  const statusRows = sqlite
-    .prepare(
-      'SELECT status, COUNT(*) AS n FROM students WHERE academy_id = ? GROUP BY status ORDER BY n DESC',
-    )
-    .all(academyId) as { status: string; n: number }[];
-  const planCount = (
-    sqlite.prepare('SELECT COUNT(*) AS n FROM plans WHERE academy_id = ?').get(academyId) as {
-      n: number;
-    }
-  ).n;
-  const range = sqlite
-    .prepare(
-      'SELECT MIN(timestamp) AS minTs, MAX(timestamp) AS maxTs FROM access_events WHERE academy_id = ?',
-    )
-    .get(academyId) as { minTs: number | null; maxTs: number | null };
+  const statusRows = await db.all<{ status: string; n: number }>(
+    'SELECT status, COUNT(*) AS n FROM students WHERE academy_id = ? GROUP BY status ORDER BY n DESC',
+    academyId,
+  );
+  const planRow = await db.one<{ n: number }>(
+    'SELECT COUNT(*) AS n FROM plans WHERE academy_id = ?',
+    academyId,
+  );
+  const planCount = planRow?.n ?? 0;
+  const range = (await db.one<{ mints: number | null; maxts: number | null }>(
+    'SELECT MIN(timestamp) AS minTs, MAX(timestamp) AS maxTs FROM access_events WHERE academy_id = ?',
+    academyId,
+  ))!;
 
   console.log('');
   console.log('Resumo do seed');
@@ -140,8 +144,8 @@ function main(): void {
   }
   console.log(`  Planos: ${planCount}`);
   console.log(`  Eventos de acesso: ${result.accessEvents}`);
-  if (range.minTs !== null && range.maxTs !== null) {
-    console.log(`  Período coberto: ${fmtDateMs(range.minTs)} a ${fmtDateMs(range.maxTs)}`);
+  if (range.mints !== null && range.maxts !== null) {
+    console.log(`  Período coberto: ${fmtDateMs(range.mints)} a ${fmtDateMs(range.maxts)}`);
   }
   console.log('');
   console.log('Credenciais de demonstração');
@@ -149,4 +153,5 @@ function main(): void {
   console.log(`  Senha: ${DEMO_SENHA}`);
 }
 
-main();
+await main();
+await fecharConexao();

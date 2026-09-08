@@ -1,0 +1,26 @@
+{
+ "alerts": {
+  "frequencyDrop": 0.3,
+  "inactivityDays": [
+   7,
+   14,
+   30
+  ],
+  "minBaselineWeekly": 1
+ },
+ "risk": {
+  "baselineWindowDays": 180,
+  "frequencyDrop": {
+   "high": 0.5,
+   "medium": 0.3
+  },
+  "inactivity": {
+   "critical": 30,
+   "high": 10,
+   "medium": 7
+  },
+  "minBaselineWeeklyForDrop": 1,
+  "minBaselineWeeks": 2,
+  "recentWindowDays": 28
+ }
+}

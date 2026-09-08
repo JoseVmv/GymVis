@@ -1,8 +1,9 @@
 import type { RevenueAtRiskResponse } from '@gymvis/shared';
 import { computeStudentMetrics, isEnrolled } from './studentMetrics';
 
-export function getRevenueAtRisk(academyId: number): RevenueAtRiskResponse {
-  const enrolled = computeStudentMetrics(academyId).filter((m) => isEnrolled(m.status));
+export async function getRevenueAtRisk(academyId: number): Promise<RevenueAtRiskResponse> {
+  const todos = await computeStudentMetrics(academyId);
+  const enrolled = todos.filter((m) => isEnrolled(m.status));
 
   let highCount = 0;
   let highCentavos = 0;

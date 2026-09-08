@@ -1,0 +1,61 @@
+{
+ "despesasCentavos": 0,
+ "despesasPorCategoria": [],
+ "expenses": [],
+ "inadimplenciaCentavos": 2211000,
+ "meses": [
+  {
+   "despesasCentavos": 0,
+   "inadimplenciaCentavos": 297640,
+   "label": "abr/26",
+   "month": "2026-04",
+   "receitaCentavos": 3976670,
+   "resultadoCentavos": 3976670
+  },
+  {
+   "despesasCentavos": 0,
+   "inadimplenciaCentavos": 323620,
+   "label": "mai/26",
+   "month": "2026-05",
+   "receitaCentavos": 4211760,
+   "resultadoCentavos": 4211760
+  },
+  {
+   "despesasCentavos": 0,
+   "inadimplenciaCentavos": 361090,
+   "label": "jun/26",
+   "month": "2026-06",
+   "receitaCentavos": 4337820,
+   "resultadoCentavos": 4337820
+  },
+  {
+   "despesasCentavos": 0,
+   "inadimplenciaCentavos": 387070,
+   "label": "jul/26",
+   "month": "2026-07",
+   "receitaCentavos": 4511550,
+   "resultadoCentavos": 4511550
+  },
+  {
+   "despesasCentavos": 0,
+   "inadimplenciaCentavos": 408550,
+   "label": "ago/26",
+   "month": "2026-08",
+   "receitaCentavos": 4785800,
+   "resultadoCentavos": 4785800
+  },
+  {
+   "despesasCentavos": 0,
+   "inadimplenciaCentavos": 433030,
+   "label": "set/26",
+   "month": "2026-09",
+   "receitaCentavos": 5144860,
+   "resultadoCentavos": 5144860
+  }
+ ],
+ "periodMonths": 6,
+ "receitaCentavos": 26968460,
+ "receitaMensalAtualCentavos": 5577890,
+ "resultadoCentavos": 26968460,
+ "ticketMedioCentavos": 10916
+}

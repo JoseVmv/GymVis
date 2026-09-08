@@ -1,85 +1,93 @@
 import type { Promotion, PromotionPayload } from '@gymvis/shared';
-import { sqlite } from '../db/client';
+import { invalidarCache } from './metricsCache';
+import { db } from '../db/client';
 
-const listStmt = sqlite.prepare(`
+const LISTAR = `
   SELECT p.id, p.nome, p.desconto_centavos, p.ativa,
          (SELECT COUNT(*) FROM students s WHERE s.promocao_id = p.id) AS alunos
   FROM promotions p
   WHERE p.academy_id = ?
-  ORDER BY p.ativa DESC, p.created_at DESC
-`);
+  ORDER BY p.ativa DESC, p.created_at DESC, p.id DESC
+`;
 
-const insertStmt = sqlite.prepare(
-  'INSERT INTO promotions (academy_id, nome, desconto_centavos, ativa, created_at) VALUES (?, ?, ?, ?, ?)',
-);
+const INSERIR =
+  'INSERT INTO promotions (academy_id, nome, desconto_centavos, ativa, created_at) VALUES (?, ?, ?, ?, ?) RETURNING id';
 
-const updateStmt = sqlite.prepare(
-  'UPDATE promotions SET nome = ?, desconto_centavos = ?, ativa = ? WHERE id = ? AND academy_id = ?',
-);
+const ATUALIZAR =
+  'UPDATE promotions SET nome = ?, desconto_centavos = ?, ativa = ? WHERE id = ? AND academy_id = ?';
 
-const deleteStmt = sqlite.prepare('DELETE FROM promotions WHERE id = ? AND academy_id = ?');
+const APAGAR = 'DELETE FROM promotions WHERE id = ? AND academy_id = ?';
 
-const clearFromStudentsStmt = sqlite.prepare(
-  'UPDATE students SET promocao_id = NULL WHERE promocao_id = ? AND academy_id = ?',
-);
+const DESVINCULAR_ALUNOS =
+  'UPDATE students SET promocao_id = NULL WHERE promocao_id = ? AND academy_id = ?';
+
+const PERTENCE = 'SELECT 1 AS ok FROM promotions WHERE id = ? AND academy_id = ?';
 
 interface PromotionRow {
   id: number;
   nome: string;
   desconto_centavos: number;
-  ativa: number;
+  /** No Postgres a coluna é boolean de verdade. */
+  ativa: boolean;
   alunos: number;
 }
 
-export function listPromotions(academyId: number): Promotion[] {
-  return (listStmt.all(academyId) as PromotionRow[]).map((r) => ({
+export async function listPromotions(academyId: number): Promise<Promotion[]> {
+  const linhas = await db.all<PromotionRow>(LISTAR, academyId);
+  return linhas.map((r) => ({
     id: r.id,
     nome: r.nome,
     descontoCentavos: r.desconto_centavos,
-    ativa: r.ativa === 1,
+    ativa: r.ativa,
     alunos: r.alunos,
   }));
 }
 
-export function createPromotion(academyId: number, payload: PromotionPayload): number {
-  const info = insertStmt.run(
+export async function createPromotion(
+  academyId: number,
+  payload: PromotionPayload,
+): Promise<number> {
+  const linha = await db.one<{ id: number }>(
+    INSERIR,
     academyId,
     payload.nome.trim(),
     payload.descontoCentavos,
-    payload.ativa ? 1 : 0,
+    payload.ativa,
     Date.now(),
   );
-  return Number(info.lastInsertRowid);
+  invalidarCache(academyId);
+  return linha!.id;
 }
 
-export function updatePromotion(
+export async function updatePromotion(
   academyId: number,
   id: number,
   payload: PromotionPayload,
-): boolean {
-  const info = updateStmt.run(
+): Promise<boolean> {
+  const afetadas = await db.run(
+    ATUALIZAR,
     payload.nome.trim(),
     payload.descontoCentavos,
-    payload.ativa ? 1 : 0,
+    payload.ativa,
     id,
     academyId,
   );
-  return info.changes > 0;
+  invalidarCache(academyId);
+  return afetadas > 0;
 }
 
 /** Excluir a promoção desvincula os alunos, em vez de bloquear a exclusão. */
-const deleteTx = sqlite.transaction((academyId: number, id: number) => {
-  clearFromStudentsStmt.run(id, academyId);
-  return deleteStmt.run(id, academyId).changes > 0;
-});
-
-export function deletePromotion(academyId: number, id: number): boolean {
-  return deleteTx(academyId, id);
+export async function deletePromotion(academyId: number, id: number): Promise<boolean> {
+  invalidarCache(academyId);
+  return db.transaction(async (tx) => {
+    await tx.run(DESVINCULAR_ALUNOS, id, academyId);
+    return (await tx.run(APAGAR, id, academyId)) > 0;
+  });
 }
 
-export function promotionBelongsToAcademy(academyId: number, promotionId: number): boolean {
-  const row = sqlite
-    .prepare('SELECT 1 AS ok FROM promotions WHERE id = ? AND academy_id = ?')
-    .get(promotionId, academyId);
-  return row !== undefined;
+export async function promotionBelongsToAcademy(
+  academyId: number,
+  promotionId: number,
+): Promise<boolean> {
+  return (await db.one(PERTENCE, promotionId, academyId)) !== undefined;
 }

@@ -1,74 +1,99 @@
 import type { OverviewResponse } from '@gymvis/shared';
-import { sqlite } from '../db/client';
+import { db } from '../db/client';
 import { MS_PER_DAY, addDays, round2, toDateStr } from '../lib/dates';
-import { enrolledCountAt } from './studentMetrics';
 
-const statusCountsStmt = sqlite.prepare(`
-  SELECT status, COUNT(*) AS c
-  FROM students
-  WHERE academy_id = ?
-  GROUP BY status
-`);
+/**
+ * Todos os números do período numa consulta só.
+ *
+ * Antes eram nove consultas disparadas em paralelo — que, com um pool
+ * pequeno, viram filas de ida e volta. Agregar tudo em subconsultas escalares
+ * custa um RTT único.
+ */
+const RESUMO = `
+  SELECT
+    (SELECT COUNT(*) FROM students WHERE academy_id = ? AND status = 'ativo') AS ativos,
+    (SELECT COUNT(*) FROM students WHERE academy_id = ? AND status = 'inadimplente') AS inadimplentes,
+    (SELECT COUNT(*) FROM students WHERE academy_id = ? AND status = 'pausado') AS pausados,
+    (SELECT COUNT(*) FROM students
+      WHERE academy_id = ? AND data_entrada > ? AND data_entrada <= ?) AS novos,
+    (SELECT COUNT(*) FROM students
+      WHERE academy_id = ? AND data_entrada > ? AND data_entrada <= ?) AS novos_ant,
+    (SELECT COUNT(*) FROM students
+      WHERE academy_id = ? AND status = 'cancelado' AND data_saida > ? AND data_saida <= ?) AS saidas,
+    (SELECT COUNT(*) FROM students
+      WHERE academy_id = ? AND status = 'cancelado' AND data_saida > ? AND data_saida <= ?) AS saidas_ant,
+    (SELECT COUNT(*) FROM access_events
+      WHERE academy_id = ? AND tipo_evento = 'entrada'
+        AND timestamp >= ? AND timestamp < ?) AS acessos,
+    (SELECT COUNT(*) FROM access_events
+      WHERE academy_id = ? AND tipo_evento = 'entrada'
+        AND timestamp >= ? AND timestamp < ?) AS acessos_ant,
+    (SELECT COUNT(*) FROM students
+      WHERE academy_id = ? AND data_entrada <= ? AND (data_saida IS NULL OR data_saida > ?)) AS matriculados,
+    (SELECT COUNT(*) FROM students
+      WHERE academy_id = ? AND data_entrada <= ? AND (data_saida IS NULL OR data_saida > ?)) AS matriculados_ant
+`;
 
-// Janelas de calendário: (início, fim] — cada uma cobre exatamente P dias.
-const entriesRangeStmt = sqlite.prepare(`
-  SELECT COUNT(*) AS c
-  FROM students
-  WHERE academy_id = ? AND data_entrada > ? AND data_entrada <= ?
-`);
+interface ResumoRow {
+  ativos: number;
+  inadimplentes: number;
+  pausados: number;
+  novos: number;
+  novos_ant: number;
+  saidas: number;
+  saidas_ant: number;
+  acessos: number;
+  acessos_ant: number;
+  matriculados: number;
+  matriculados_ant: number;
+}
 
-const exitsRangeStmt = sqlite.prepare(`
-  SELECT COUNT(*) AS c
-  FROM students
-  WHERE academy_id = ? AND status = 'cancelado' AND data_saida > ? AND data_saida <= ?
-`);
-
-const accessesRangeStmt = sqlite.prepare(`
-  SELECT COUNT(*) AS c
-  FROM access_events
-  WHERE academy_id = ? AND tipo_evento = 'entrada' AND timestamp >= ? AND timestamp < ?
-`);
-
-const count = (row: unknown): number => (row as { c: number }).c;
-
-export function getOverview(academyId: number, periodDays: number): OverviewResponse {
+export async function getOverview(
+  academyId: number,
+  periodDays: number,
+): Promise<OverviewResponse> {
   const now = new Date();
   const nowMs = now.getTime();
-
-  const statusCounts = new Map<string, number>();
-  for (const r of statusCountsStmt.all(academyId) as { status: string; c: number }[]) {
-    statusCounts.set(r.status, r.c);
-  }
-  const activeStudents = (statusCounts.get('ativo') ?? 0) + (statusCounts.get('inadimplente') ?? 0);
 
   const today = toDateStr(now);
   const periodAgo = toDateStr(addDays(now, -periodDays));
   const twoPeriodsAgo = toDateStr(addDays(now, -2 * periodDays));
-
-  const newStudents = count(entriesRangeStmt.get(academyId, periodAgo, today));
-  const newStudentsPrev = count(entriesRangeStmt.get(academyId, twoPeriodsAgo, periodAgo));
-  const cancellations = count(exitsRangeStmt.get(academyId, periodAgo, today));
-  const cancellationsPrev = count(exitsRangeStmt.get(academyId, twoPeriodsAgo, periodAgo));
-
   const periodMs = periodDays * MS_PER_DAY;
-  const totalAccesses = count(accessesRangeStmt.get(academyId, nowMs - periodMs, nowMs + 1));
-  const totalAccessesPrev = count(
-    accessesRangeStmt.get(academyId, nowMs - 2 * periodMs, nowMs - periodMs),
-  );
+
+  const r = (await db.one<ResumoRow>(
+    RESUMO,
+    academyId,
+    academyId,
+    academyId,
+    academyId, periodAgo, today,
+    academyId, twoPeriodsAgo, periodAgo,
+    academyId, periodAgo, today,
+    academyId, twoPeriodsAgo, periodAgo,
+    academyId, nowMs - periodMs, nowMs + 1,
+    academyId, nowMs - 2 * periodMs, nowMs - periodMs,
+    academyId, today, today,
+    academyId, periodAgo, periodAgo,
+  ))!;
+
+  const activeStudents = r.ativos + r.inadimplentes;
+  const newStudents = r.novos;
+  const newStudentsPrev = r.novos_ant;
+  const cancellations = r.saidas;
+  const cancellationsPrev = r.saidas_ant;
+  const totalAccesses = r.acessos;
+  const totalAccessesPrev = r.acessos_ant;
 
   // Cada janela é normalizada pela base matriculada vigente nela: usar o
   // plantel de hoje nas duas faria o delta degenerar na variação de acessos.
   const weeks = periodDays / 7;
   const avgWeekly = (accesses: number, enrolled: number): number =>
     enrolled > 0 ? round2(accesses / enrolled / weeks) : 0;
-  const enrolledNow = enrolledCountAt(academyId, today);
-  const enrolledPrev = enrolledCountAt(academyId, periodAgo);
 
   return {
     periodDays,
     activeStudents,
-    delinquentStudents: statusCounts.get('inadimplente') ?? 0,
-    pausedStudents: statusCounts.get('pausado') ?? 0,
+    delinquentStudents: r.inadimplentes,
+    pausedStudents: r.pausados,
     newStudents,
     newStudentsPrev,
     cancellations,
@@ -77,7 +102,7 @@ export function getOverview(academyId: number, periodDays: number): OverviewResp
     netGrowthPrev: newStudentsPrev - cancellationsPrev,
     totalAccesses,
     totalAccessesPrev,
-    avgWeeklyFrequency: avgWeekly(totalAccesses, enrolledNow),
-    avgWeeklyFrequencyPrev: avgWeekly(totalAccessesPrev, enrolledPrev),
+    avgWeeklyFrequency: avgWeekly(totalAccesses, r.matriculados),
+    avgWeeklyFrequencyPrev: avgWeekly(totalAccessesPrev, r.matriculados_ant),
   };
 }

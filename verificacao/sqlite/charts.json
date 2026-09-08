@@ -1,0 +1,280 @@
+{
+ "activeEvolution": [
+  {
+   "label": "out/25",
+   "month": "2025-10",
+   "value": 262
+  },
+  {
+   "label": "nov/25",
+   "month": "2025-11",
+   "value": 276
+  },
+  {
+   "label": "dez/25",
+   "month": "2025-12",
+   "value": 276
+  },
+  {
+   "label": "jan/26",
+   "month": "2026-01",
+   "value": 334
+  },
+  {
+   "label": "fev/26",
+   "month": "2026-02",
+   "value": 361
+  },
+  {
+   "label": "mar/26",
+   "month": "2026-03",
+   "value": 384
+  },
+  {
+   "label": "abr/26",
+   "month": "2026-04",
+   "value": 399
+  },
+  {
+   "label": "mai/26",
+   "month": "2026-05",
+   "value": 422
+  },
+  {
+   "label": "jun/26",
+   "month": "2026-06",
+   "value": 440
+  },
+  {
+   "label": "jul/26",
+   "month": "2026-07",
+   "value": 462
+  },
+  {
+   "label": "ago/26",
+   "month": "2026-08",
+   "value": 489
+  },
+  {
+   "label": "set/26",
+   "month": "2026-09",
+   "value": 525
+  }
+ ],
+ "avgFrequency": [
+  {
+   "label": "out/25",
+   "month": "2025-10",
+   "value": 2.48
+  },
+  {
+   "label": "nov/25",
+   "month": "2025-11",
+   "value": 2.38
+  },
+  {
+   "label": "dez/25",
+   "month": "2025-12",
+   "value": 1.8
+  },
+  {
+   "label": "jan/26",
+   "month": "2026-01",
+   "value": 2.48
+  },
+  {
+   "label": "fev/26",
+   "month": "2026-02",
+   "value": 2.52
+  },
+  {
+   "label": "mar/26",
+   "month": "2026-03",
+   "value": 2.46
+  },
+  {
+   "label": "abr/26",
+   "month": "2026-04",
+   "value": 2.5
+  },
+  {
+   "label": "mai/26",
+   "month": "2026-05",
+   "value": 2.4
+  },
+  {
+   "label": "jun/26",
+   "month": "2026-06",
+   "value": 2.56
+  },
+  {
+   "label": "jul/26",
+   "month": "2026-07",
+   "value": 2.48
+  },
+  {
+   "label": "ago/26",
+   "month": "2026-08",
+   "value": 2.14
+  },
+  {
+   "label": "set/26",
+   "month": "2026-09",
+   "value": 1.82
+  }
+ ],
+ "flow": [
+  {
+   "cancelamentos": 8,
+   "label": "out/25",
+   "month": "2025-10",
+   "novos": 28
+  },
+  {
+   "cancelamentos": 8,
+   "label": "nov/25",
+   "month": "2025-11",
+   "novos": 22
+  },
+  {
+   "cancelamentos": 15,
+   "label": "dez/25",
+   "month": "2025-12",
+   "novos": 15
+  },
+  {
+   "cancelamentos": 8,
+   "label": "jan/26",
+   "month": "2026-01",
+   "novos": 66
+  },
+  {
+   "cancelamentos": 13,
+   "label": "fev/26",
+   "month": "2026-02",
+   "novos": 40
+  },
+  {
+   "cancelamentos": 14,
+   "label": "mar/26",
+   "month": "2026-03",
+   "novos": 37
+  },
+  {
+   "cancelamentos": 16,
+   "label": "abr/26",
+   "month": "2026-04",
+   "novos": 31
+  },
+  {
+   "cancelamentos": 15,
+   "label": "mai/26",
+   "month": "2026-05",
+   "novos": 38
+  },
+  {
+   "cancelamentos": 18,
+   "label": "jun/26",
+   "month": "2026-06",
+   "novos": 36
+  },
+  {
+   "cancelamentos": 17,
+   "label": "jul/26",
+   "month": "2026-07",
+   "novos": 39
+  },
+  {
+   "cancelamentos": 15,
+   "label": "ago/26",
+   "month": "2026-08",
+   "novos": 42
+  },
+  {
+   "cancelamentos": 1,
+   "label": "set/26",
+   "month": "2026-09",
+   "novos": 37
+  }
+ ],
+ "riskDistribution": [
+  {
+   "count": 370,
+   "level": "LOW"
+  },
+  {
+   "count": 44,
+   "level": "MEDIUM"
+  },
+  {
+   "count": 61,
+   "level": "HIGH"
+  },
+  {
+   "count": 36,
+   "level": "CRITICAL"
+  }
+ ],
+ "weeklyAccesses": [
+  {
+   "label": "15/06",
+   "value": 1118,
+   "weekStart": "2026-06-15"
+  },
+  {
+   "label": "22/06",
+   "value": 1142,
+   "weekStart": "2026-06-22"
+  },
+  {
+   "label": "29/06",
+   "value": 1116,
+   "weekStart": "2026-06-29"
+  },
+  {
+   "label": "06/07",
+   "value": 1121,
+   "weekStart": "2026-07-06"
+  },
+  {
+   "label": "13/07",
+   "value": 1136,
+   "weekStart": "2026-07-13"
+  },
+  {
+   "label": "20/07",
+   "value": 1141,
+   "weekStart": "2026-07-20"
+  },
+  {
+   "label": "27/07",
+   "value": 1117,
+   "weekStart": "2026-07-27"
+  },
+  {
+   "label": "03/08",
+   "value": 1112,
+   "weekStart": "2026-08-03"
+  },
+  {
+   "label": "10/08",
+   "value": 1092,
+   "weekStart": "2026-08-10"
+  },
+  {
+   "label": "17/08",
+   "value": 1065,
+   "weekStart": "2026-08-17"
+  },
+  {
+   "label": "24/08",
+   "value": 1023,
+   "weekStart": "2026-08-24"
+  },
+  {
+   "label": "31/08",
+   "value": 996,
+   "weekStart": "2026-08-31"
+  }
+ ]
+}

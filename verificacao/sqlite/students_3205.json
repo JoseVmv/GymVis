@@ -1,0 +1,526 @@
+{
+ "baselineWeekly": 1.05,
+ "dataEntrada": "2023-10-05",
+ "dataSaida": null,
+ "daysSinceJoin": 1069,
+ "daysSinceLastAccess": 8,
+ "email": "jprado@hotmail.com",
+ "id": 3205,
+ "lastAccessAt": 1788219286000,
+ "mensalidadeCentavos": 12990,
+ "nome": "João Santana Prado",
+ "planoId": 21,
+ "planoNome": "Mensal",
+ "promocaoId": null,
+ "promocaoNome": null,
+ "recentAccesses": [
+  {
+   "timestamp": 1788219286000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1787951225000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1787347336000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1786394935000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1786144800000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1785198415000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1784580334000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1784325542000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1783379533000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1782779095000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1782512808000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1781721710000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1781216193000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1780337126000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1780099427000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1779493729000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1778887734000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1778280232000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1777332701000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1777066137000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1776717083000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1776469144000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1775864653000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1775248622000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1774302050000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1773702418000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1773263854000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1772496040000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1771882468000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1771287836000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1770671874000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1769810363000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1768861679000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1768263111000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1767136512000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1766442872000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1766189924000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1765316226000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1764622385000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1764372674000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1763424516000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1763150118000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1762388802000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1761949609000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1761338225000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1760737052000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1760142616000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1759178434000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1758922970000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1758322814000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1757369607000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1756157426000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1755903005000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1755433462000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1754430146000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1754067655000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1753475873000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1752538018000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1751933631000,
+   "tipoEvento": "entrada"
+  },
+  {
+   "timestamp": 1751319303000,
+   "tipoEvento": "entrada"
+  }
+ ],
+ "recentWeekly": 0.75,
+ "risk": null,
+ "riskReasons": [],
+ "status": "pausado",
+ "telefone": "(11) 97436-0535",
+ "variation": -0.28571428571428575,
+ "weeklySeries": [
+  {
+   "count": 1,
+   "label": "08/09",
+   "weekStart": "2025-09-08"
+  },
+  {
+   "count": 1,
+   "label": "15/09",
+   "weekStart": "2025-09-15"
+  },
+  {
+   "count": 1,
+   "label": "22/09",
+   "weekStart": "2025-09-22"
+  },
+  {
+   "count": 1,
+   "label": "29/09",
+   "weekStart": "2025-09-29"
+  },
+  {
+   "count": 1,
+   "label": "06/10",
+   "weekStart": "2025-10-06"
+  },
+  {
+   "count": 1,
+   "label": "13/10",
+   "weekStart": "2025-10-13"
+  },
+  {
+   "count": 1,
+   "label": "20/10",
+   "weekStart": "2025-10-20"
+  },
+  {
+   "count": 1,
+   "label": "27/10",
+   "weekStart": "2025-10-27"
+  },
+  {
+   "count": 1,
+   "label": "03/11",
+   "weekStart": "2025-11-03"
+  },
+  {
+   "count": 1,
+   "label": "10/11",
+   "weekStart": "2025-11-10"
+  },
+  {
+   "count": 1,
+   "label": "17/11",
+   "weekStart": "2025-11-17"
+  },
+  {
+   "count": 1,
+   "label": "24/11",
+   "weekStart": "2025-11-24"
+  },
+  {
+   "count": 1,
+   "label": "01/12",
+   "weekStart": "2025-12-01"
+  },
+  {
+   "count": 1,
+   "label": "08/12",
+   "weekStart": "2025-12-08"
+  },
+  {
+   "count": 1,
+   "label": "15/12",
+   "weekStart": "2025-12-15"
+  },
+  {
+   "count": 1,
+   "label": "22/12",
+   "weekStart": "2025-12-22"
+  },
+  {
+   "count": 1,
+   "label": "29/12",
+   "weekStart": "2025-12-29"
+  },
+  {
+   "count": 0,
+   "label": "05/01",
+   "weekStart": "2026-01-05"
+  },
+  {
+   "count": 1,
+   "label": "12/01",
+   "weekStart": "2026-01-12"
+  },
+  {
+   "count": 1,
+   "label": "19/01",
+   "weekStart": "2026-01-19"
+  },
+  {
+   "count": 1,
+   "label": "26/01",
+   "weekStart": "2026-01-26"
+  },
+  {
+   "count": 0,
+   "label": "02/02",
+   "weekStart": "2026-02-02"
+  },
+  {
+   "count": 1,
+   "label": "09/02",
+   "weekStart": "2026-02-09"
+  },
+  {
+   "count": 1,
+   "label": "16/02",
+   "weekStart": "2026-02-16"
+  },
+  {
+   "count": 1,
+   "label": "23/02",
+   "weekStart": "2026-02-23"
+  },
+  {
+   "count": 1,
+   "label": "02/03",
+   "weekStart": "2026-03-02"
+  },
+  {
+   "count": 1,
+   "label": "09/03",
+   "weekStart": "2026-03-09"
+  },
+  {
+   "count": 1,
+   "label": "16/03",
+   "weekStart": "2026-03-16"
+  },
+  {
+   "count": 1,
+   "label": "23/03",
+   "weekStart": "2026-03-23"
+  },
+  {
+   "count": 1,
+   "label": "30/03",
+   "weekStart": "2026-03-30"
+  },
+  {
+   "count": 1,
+   "label": "06/04",
+   "weekStart": "2026-04-06"
+  },
+  {
+   "count": 1,
+   "label": "13/04",
+   "weekStart": "2026-04-13"
+  },
+  {
+   "count": 2,
+   "label": "20/04",
+   "weekStart": "2026-04-20"
+  },
+  {
+   "count": 1,
+   "label": "27/04",
+   "weekStart": "2026-04-27"
+  },
+  {
+   "count": 1,
+   "label": "04/05",
+   "weekStart": "2026-05-04"
+  },
+  {
+   "count": 1,
+   "label": "11/05",
+   "weekStart": "2026-05-11"
+  },
+  {
+   "count": 1,
+   "label": "18/05",
+   "weekStart": "2026-05-18"
+  },
+  {
+   "count": 1,
+   "label": "25/05",
+   "weekStart": "2026-05-25"
+  },
+  {
+   "count": 1,
+   "label": "01/06",
+   "weekStart": "2026-06-01"
+  },
+  {
+   "count": 1,
+   "label": "08/06",
+   "weekStart": "2026-06-08"
+  },
+  {
+   "count": 1,
+   "label": "15/06",
+   "weekStart": "2026-06-15"
+  },
+  {
+   "count": 1,
+   "label": "22/06",
+   "weekStart": "2026-06-22"
+  },
+  {
+   "count": 1,
+   "label": "29/06",
+   "weekStart": "2026-06-29"
+  },
+  {
+   "count": 1,
+   "label": "06/07",
+   "weekStart": "2026-07-06"
+  },
+  {
+   "count": 1,
+   "label": "13/07",
+   "weekStart": "2026-07-13"
+  },
+  {
+   "count": 1,
+   "label": "20/07",
+   "weekStart": "2026-07-20"
+  },
+  {
+   "count": 1,
+   "label": "27/07",
+   "weekStart": "2026-07-27"
+  },
+  {
+   "count": 1,
+   "label": "03/08",
+   "weekStart": "2026-08-03"
+  },
+  {
+   "count": 1,
+   "label": "10/08",
+   "weekStart": "2026-08-10"
+  },
+  {
+   "count": 1,
+   "label": "17/08",
+   "weekStart": "2026-08-17"
+  },
+  {
+   "count": 1,
+   "label": "24/08",
+   "weekStart": "2026-08-24"
+  },
+  {
+   "count": 1,
+   "label": "31/08",
+   "weekStart": "2026-08-31"
+  }
+ ]
+}

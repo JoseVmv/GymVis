@@ -1,6 +1,7 @@
 import type { AcademySettings, SettingsResponse } from '@gymvis/shared';
 import { defaultRiskRules, type RiskRules } from '../config/risk';
-import { sqlite } from '../db/client';
+import { db } from '../db/client';
+import { invalidarCache } from './metricsCache';
 import { listPlans } from './plans';
 import { listPromotions } from './promotions';
 
@@ -12,30 +13,32 @@ interface SettingsRow {
   frequency_drop_high: number;
 }
 
-const selectStmt = sqlite.prepare(
-  'SELECT inactivity_medium, inactivity_high, inactivity_critical, frequency_drop_medium, frequency_drop_high FROM academy_settings WHERE academy_id = ?',
-);
+const SELECIONAR = `
+  SELECT inactivity_medium, inactivity_high, inactivity_critical,
+         frequency_drop_medium, frequency_drop_high
+  FROM academy_settings WHERE academy_id = ?
+`;
 
-const upsertStmt = sqlite.prepare(`
+const SALVAR = `
   INSERT INTO academy_settings
     (academy_id, inactivity_medium, inactivity_high, inactivity_critical,
      frequency_drop_medium, frequency_drop_high, updated_at)
   VALUES (?, ?, ?, ?, ?, ?, ?)
-  ON CONFLICT(academy_id) DO UPDATE SET
+  ON CONFLICT (academy_id) DO UPDATE SET
     inactivity_medium = excluded.inactivity_medium,
     inactivity_high = excluded.inactivity_high,
     inactivity_critical = excluded.inactivity_critical,
     frequency_drop_medium = excluded.frequency_drop_medium,
     frequency_drop_high = excluded.frequency_drop_high,
     updated_at = excluded.updated_at
-`);
+`;
 
-const academyNameStmt = sqlite.prepare('SELECT nome FROM academies WHERE id = ?');
-const renameAcademyStmt = sqlite.prepare('UPDATE academies SET nome = ? WHERE id = ?');
+const NOME_ACADEMIA = 'SELECT nome FROM academies WHERE id = ?';
+const RENOMEAR_ACADEMIA = 'UPDATE academies SET nome = ? WHERE id = ?';
 
 /** Limiares em vigor para a academia: os salvos, ou os padrões de fábrica. */
-export function getRiskRules(academyId: number): RiskRules {
-  const row = selectStmt.get(academyId) as SettingsRow | undefined;
+export async function getRiskRules(academyId: number): Promise<RiskRules> {
+  const row = await db.one<SettingsRow>(SELECIONAR, academyId);
   if (!row) return defaultRiskRules;
   return {
     inactivity: {
@@ -50,14 +53,15 @@ export function getRiskRules(academyId: number): RiskRules {
   };
 }
 
-function academyName(academyId: number): string {
-  return ((academyNameStmt.get(academyId) as { nome: string } | undefined)?.nome ?? '').trim();
+async function academyName(academyId: number): Promise<string> {
+  const linha = await db.one<{ nome: string }>(NOME_ACADEMIA, academyId);
+  return (linha?.nome ?? '').trim();
 }
 
-export function getSettings(academyId: number): AcademySettings {
-  const rules = getRiskRules(academyId);
+export async function getSettings(academyId: number): Promise<AcademySettings> {
+  const [rules, nome] = await Promise.all([getRiskRules(academyId), academyName(academyId)]);
   return {
-    academiaNome: academyName(academyId),
+    academiaNome: nome,
     inactivityMedium: rules.inactivity.medium,
     inactivityHigh: rules.inactivity.high,
     inactivityCritical: rules.inactivity.critical,
@@ -66,9 +70,9 @@ export function getSettings(academyId: number): AcademySettings {
   };
 }
 
-export function getDefaults(academyId: number): AcademySettings {
+export async function getDefaults(academyId: number): Promise<AcademySettings> {
   return {
-    academiaNome: academyName(academyId),
+    academiaNome: await academyName(academyId),
     inactivityMedium: defaultRiskRules.inactivity.medium,
     inactivityHigh: defaultRiskRules.inactivity.high,
     inactivityCritical: defaultRiskRules.inactivity.critical,
@@ -77,28 +81,30 @@ export function getDefaults(academyId: number): AcademySettings {
   };
 }
 
-export function getSettingsPage(academyId: number): SettingsResponse {
-  return {
-    settings: getSettings(academyId),
-    defaults: getDefaults(academyId),
-    plans: listPlans(academyId),
-    promotions: listPromotions(academyId),
-  };
+export async function getSettingsPage(academyId: number): Promise<SettingsResponse> {
+  const [settings, defaults, plans, promotions] = await Promise.all([
+    getSettings(academyId),
+    getDefaults(academyId),
+    listPlans(academyId),
+    listPromotions(academyId),
+  ]);
+  return { settings, defaults, plans, promotions };
 }
 
-const saveTx = sqlite.transaction((academyId: number, s: AcademySettings) => {
-  renameAcademyStmt.run(s.academiaNome.trim(), academyId);
-  upsertStmt.run(
-    academyId,
-    s.inactivityMedium,
-    s.inactivityHigh,
-    s.inactivityCritical,
-    s.frequencyDropMedium,
-    s.frequencyDropHigh,
-    Date.now(),
-  );
-});
-
-export function saveSettings(academyId: number, settings: AcademySettings): void {
-  saveTx(academyId, settings);
+export async function saveSettings(academyId: number, settings: AcademySettings): Promise<void> {
+  await db.transaction(async (tx) => {
+    await tx.run(RENOMEAR_ACADEMIA, settings.academiaNome.trim(), academyId);
+    await tx.run(
+      SALVAR,
+      academyId,
+      settings.inactivityMedium,
+      settings.inactivityHigh,
+      settings.inactivityCritical,
+      settings.frequencyDropMedium,
+      settings.frequencyDropHigh,
+      Date.now(),
+    );
+  });
+  // Os limiares entram no cálculo de risco de cada aluno.
+  invalidarCache(academyId);
 }

@@ -10,7 +10,6 @@ registrados e responde às perguntas que importam para o dono:
 - Quem está deixando de frequentar? Quem está em risco de evasão?
 - Quanto de receita mensal está potencialmente em risco?
 - Como está a retenção das turmas de entrada?
-
 - Quanto a academia faturou e quanto gastou no período?
 
 Cada alerta do painel é clicável e abre a lista de alunos já filtrada por
@@ -28,22 +27,31 @@ academia como cada número é calculado.
 | **Configurações** | Planos, promoções, limiares de risco e nome da academia                |
 | **Sobre**         | Explicação do produto para o dono da academia                          |
 
-Este é um protótipo local: todos os dados ficam em um banco SQLite dentro do
-projeto e nada depende de APIs externas.
+Os dados ficam em um Postgres gerenciado no Supabase. Cada conta tem a sua
+própria academia e nunca enxerga os dados de outra — o isolamento é feito na
+consulta (todo SELECT filtra `academy_id`) e reforçado no banco por Row Level
+Security.
 
 ## Requisitos
 
 - Node.js 20+ (testado com Node 24)
 - npm 10+
+- Um projeto no Supabase
 
 ## Instalação
 
 ```bash
 npm install
+cp .env.example .env    # preencha a DATABASE_URL
 ```
 
-> O npm 12 pode bloquear os scripts de instalação nativos na primeira vez
-> (`better-sqlite3` e `esbuild`). Se isso acontecer, aprove-os e reconstrua:
+A `DATABASE_URL` vem do painel do Supabase: botão **Connect** → aba
+*Connection string* → **Transaction pooler** (porta 6543). O `.env` está no
+`.gitignore` e nunca deve ser commitado; nenhuma chave do Supabase pode chegar
+ao bundle do cliente.
+
+> O npm 12 pode bloquear scripts de instalação nativos na primeira vez
+> (`better-sqlite3`, usado só pelo importador, e `esbuild`). Se acontecer:
 >
 > ```bash
 > npm install-scripts approve better-sqlite3
@@ -51,9 +59,17 @@ npm install
 > npm rebuild better-sqlite3 esbuild
 > ```
 
-## Criando o banco e gerando dados
+## Criando as tabelas
 
-O banco (`data/gym.db`) é criado automaticamente na primeira execução.
+```bash
+npm run migrate
+```
+
+Aplica em ordem os arquivos de `server/migrations/`, registrando o que já
+rodou em `schema_migrations`. Pode rodar quantas vezes quiser.
+
+## Gerando dados
+
 Para popular com uma academia simulada realista:
 
 ```bash
@@ -73,6 +89,9 @@ npm run seed -- --students 1200 --months 12 --seed 42
 | `--seed`     | 42     | Semente do gerador (mesma seed = mesmo banco)|
 
 O seed é idempotente: rodar de novo recria a academia de demonstração.
+
+Cada conta criada pela tela de cadastro nasce com a própria academia, vazia, e
+pode gerar os dados de exemplo pelo botão do painel.
 
 Os dados simulam comportamento de academia real, não sorteios uniformes:
 sazonalidade de matrículas (janeiro em alta, dezembro em baixa), horários de
@@ -103,6 +122,9 @@ npm run dev
 - API: http://localhost:3001
 - Interface: http://localhost:5173
 
+O servidor abre as conexões com o banco ao subir, para o primeiro clique não
+pagar o handshake TLS.
+
 Separadamente, se preferir: `npm run dev:server` e `npm run dev:client`.
 
 ### Modo produção (um processo só)
@@ -116,13 +138,15 @@ npm start        # serve API + interface em http://localhost:3001
 
 ```
 GymVis/
-├── data/                  # banco SQLite local (gym.db)
+├── scripts/               # migração, importação e verificação
+├── verificacao/           # linha de base das respostas da API
 ├── shared/                # contrato de tipos da API (somente tipos)
 │   └── src/index.ts
-├── server/                # API Node + Express + better-sqlite3
+├── server/                # API Node + Express + Postgres (postgres.js)
+│   ├── migrations/        # SQL versionado, aplicado por npm run migrate
 │   └── src/
 │       ├── index.ts       # bootstrap do servidor
-│       ├── db/            # conexão + DDL, e o schema declarativo (Drizzle)
+│       ├── db/            # pool de conexões e o schema declarativo (Drizzle)
 │       ├── config/        # limiares de risco e de alertas, centralizados
 │       ├── auth/          # senha (scrypt), sessão em cookie, rate limit
 │       ├── services/      # métricas calculadas dos dados brutos
@@ -189,16 +213,50 @@ Há também um limitador de tentativas em memória (10 logins por conta a cada
 automaticamente. Ao hospedar de verdade, sirva por HTTPS e acrescente a flag
 `secure` ao cookie em `server/src/auth/session.ts`.
 
+## Isolamento entre academias
+
+Cada usuário pertence a uma academia e toda consulta filtra por `academy_id`.
+Além disso, as nove tabelas têm **RLS ligado sem nenhuma policy permissiva**:
+o Supabase publica toda tabela pela API REST, e sem RLS a chave `anon` — que é
+pública — leria o cadastro e a frequência de todos os alunos. O servidor
+conecta pelo papel do banco, que não passa por RLS, então o RLS funciona como
+segunda linha de defesa na borda pública.
+
+Para conferir a qualquer momento:
+
+```bash
+npm run verificar:isolamento
+```
+
+O teste cria duas sessões de donos diferentes e verifica que nenhuma enxerga,
+edita ou apaga aluno da outra.
+
+## Verificando a migração
+
+A migração do SQLite foi feita com uma rede de segurança que continua no
+repositório:
+
+```bash
+npm run baseline          # captura as respostas de todas as rotas
+npm run baseline:diff     # compara com a linha de base do SQLite
+npm run verificar:dados       # compara linha a linha SQLite x Postgres
+npm run verificar:agregacoes  # compara as agregações com instante fixo
+```
+
+Diferenças esperadas: as janelas móveis (últimos 7/30/90 dias, últimas 4
+semanas) andam com o relógio, então contagens de acesso mudam entre capturas
+feitas em horas diferentes. A ordem dos alunos também mudou de propósito — o
+SQLite comparava bytes e o Postgres usa a collation pt-BR, em que "Jéssica"
+vem antes de "Juliana", como um leitor brasileiro espera.
+
 ## Preparado para o futuro
 
-- **SQLite → PostgreSQL/Supabase**: as consultas são SQL cru via
-  `better-sqlite3` (síncrono e direto, adequado ao tamanho deste MVP), e
+- **Camada de dados**: as consultas são SQL cru via `postgres.js`, e
   `server/src/db/schema.ts` mantém o schema declarativo em Drizzle como
-  espelho tipado do DDL e ponto de partida da migração. Os tipos já são
-  portáveis (inteiros, epoch ms, datas `YYYY-MM-DD`, dinheiro em centavos).
-  Migrar envolve trocar o dialeto do Drizzle e reescrever as agregações dos
-  serviços — são poucas e estão concentradas em `server/src/services/`. A
-  autenticação por sessão pode dar lugar ao Supabase Auth sem tocar no resto.
+  espelho tipado do DDL. Dinheiro em centavos, instantes em epoch ms
+  (`bigint`) e datas de calendário em texto `YYYY-MM-DD`.
+- **Autenticação**: continua própria (scrypt + tabela `sessions`). Trocar por
+  Supabase Auth é uma fase à parte, que não depende do resto.
 - **Novas fontes de dados**: o gerador escreve nas mesmas tabelas que um
   futuro importador CSV/API/webhook escreveria; nenhuma métrica depende de
   como o dado entrou.
@@ -208,12 +266,18 @@ automaticamente. Ao hospedar de verdade, sirva por HTTPS e acrescente a flag
 ## Limitações conhecidas (por escolha, nesta versão)
 
 - Sem integrações externas, sem controle de catraca, sem biometria.
+- O aplicativo agora depende de rede: não funciona offline.
+- O projeto está na região `us-east-1`; para academias brasileiras, uma região
+  na América do Sul reduziria pela metade os ~145 ms de ida e volta ao banco.
 - Sem machine learning — as regras de risco são fixas e transparentes.
 - Autenticação simples (sem recuperação de senha, sem convites de equipe).
-- `POST /api/demo-data` gera ~130 mil eventos de forma síncrona e segura o
-  processo por alguns segundos. Aceitável aqui (cada academia só pode gerar
-  uma vez, e há limite de cadastros por IP); num servidor com muitos usuários,
-  mova essa geração para um worker ou uma fila.
+- `POST /api/demo-data` gera ~135 mil eventos e leva cerca de 50 segundos.
+  Aceitável aqui (cada academia só pode gerar uma vez, e há limite de
+  cadastros por IP); num servidor com muitos usuários, mova essa geração para
+  um worker ou uma fila.
+- As métricas por aluno ficam em cache por 15 segundos, invalidado a cada
+  escrita. Sem isso, o painel recalcularia o mesmo conjunto quatro vezes por
+  carregamento, uma vez para cada rota que ele consulta em paralelo.
 - O banco guarda o status atual do aluno, não seu histórico. Por isso as séries
   mensais reconstroem o plantel pelas datas de entrada e saída, o que inclui
   alunos pausados — daí o gráfico se chamar "Evolução do plantel" e não repetir

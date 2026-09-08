@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import type { CookieOptions } from 'express';
 import type { SessionUser } from '@gymvis/shared';
-import { sqlite } from '../db/client';
+import { db } from '../db/client';
 import { MS_PER_DAY } from '../lib/dates';
 
 /** Sessão rudimentar via cookie httpOnly — protótipo local, sem `secure`. */
@@ -16,17 +16,15 @@ export const sessionCookieOptions: CookieOptions = {
   maxAge: SESSION_TTL_MS,
 };
 
-const insertSessionStmt = sqlite.prepare(
-  'INSERT INTO sessions (token, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)',
-);
-const deleteSessionStmt = sqlite.prepare('DELETE FROM sessions WHERE token = ?');
-const resolveSessionStmt = sqlite.prepare(`
+const INSERIR = 'INSERT INTO sessions (token, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)';
+const APAGAR = 'DELETE FROM sessions WHERE token = ?';
+const RESOLVER = `
   SELECT s.expires_at, u.id AS user_id, u.nome, u.email, u.academy_id, a.nome AS academy_nome
   FROM sessions s
   JOIN users u ON u.id = s.user_id
   JOIN academies a ON a.id = u.academy_id
   WHERE s.token = ?
-`);
+`;
 
 interface ResolvedSessionRow {
   expires_at: number;
@@ -37,33 +35,31 @@ interface ResolvedSessionRow {
   academy_nome: string;
 }
 
-const purgeExpiredStmt = sqlite.prepare('DELETE FROM sessions WHERE expires_at <= ?');
+const LIMPAR_VENCIDAS = 'DELETE FROM sessions WHERE expires_at <= ?';
 
 /** Remove sessões vencidas; sem isso a tabela só cresce. */
-export function purgeExpiredSessions(): void {
-  purgeExpiredStmt.run(Date.now());
+export async function purgeExpiredSessions(): Promise<void> {
+  await db.run(LIMPAR_VENCIDAS, Date.now());
 }
 
-purgeExpiredSessions();
-
-export function createSession(userId: number): string {
+export async function createSession(userId: number): Promise<string> {
   const token = randomBytes(32).toString('hex');
   const now = Date.now();
-  purgeExpiredSessions();
-  insertSessionStmt.run(token, userId, now, now + SESSION_TTL_MS);
+  await purgeExpiredSessions();
+  await db.run(INSERIR, token, userId, now, now + SESSION_TTL_MS);
   return token;
 }
 
-export function deleteSession(token: string): void {
-  deleteSessionStmt.run(token);
+export async function deleteSession(token: string): Promise<void> {
+  await db.run(APAGAR, token);
 }
 
 /** Resolve o token para o usuário da sessão; sessão expirada é apagada. */
-export function resolveSession(token: string): SessionUser | null {
-  const row = resolveSessionStmt.get(token) as ResolvedSessionRow | undefined;
+export async function resolveSession(token: string): Promise<SessionUser | null> {
+  const row = await db.one<ResolvedSessionRow>(RESOLVER, token);
   if (!row) return null;
   if (row.expires_at <= Date.now()) {
-    deleteSessionStmt.run(token);
+    await db.run(APAGAR, token);
     return null;
   }
   return {

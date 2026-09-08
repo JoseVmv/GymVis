@@ -30,9 +30,10 @@ function bucket(sorted: StudentMetrics[]): AlertBucket {
   };
 }
 
-export function getAlerts(academyId: number): AlertsResponse {
-  const alertConfig = alertThresholdsFor(getRiskRules(academyId));
-  const enrolled = computeStudentMetrics(academyId).filter((m) => isEnrolled(m.status));
+export async function getAlerts(academyId: number): Promise<AlertsResponse> {
+  const alertConfig = alertThresholdsFor(await getRiskRules(academyId));
+  const todos = await computeStudentMetrics(academyId);
+  const enrolled = todos.filter((m) => isEnrolled(m.status));
 
   // Buckets exclusivos por dias efetivos sem acesso.
   const [firstDays, secondDays, thirdDays] = alertConfig.inactivityDays;

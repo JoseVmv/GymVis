@@ -1,122 +1,129 @@
-import { mkdirSync } from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import Database from 'better-sqlite3';
+import postgres from 'postgres';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-
-/** data/gym.db na raiz do repositório (sobrescreva com GYMVIS_DB_PATH). */
-export const dbPath =
-  process.env.GYMVIS_DB_PATH ?? path.resolve(here, '../../../data/gym.db');
-
-mkdirSync(path.dirname(dbPath), { recursive: true });
-
-export const sqlite = new Database(dbPath);
-sqlite.pragma('journal_mode = WAL');
-sqlite.pragma('foreign_keys = ON');
-sqlite.pragma('busy_timeout = 5000');
-
-// DDL idempotente, espelho de ./schema.ts — alterou lá, altere aqui.
-sqlite.exec(`
-CREATE TABLE IF NOT EXISTS academies (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  nome TEXT NOT NULL,
-  created_at INTEGER NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  academy_id INTEGER NOT NULL REFERENCES academies(id),
-  nome TEXT NOT NULL,
-  email TEXT NOT NULL,
-  password_hash TEXT NOT NULL,
-  created_at INTEGER NOT NULL
-);
-CREATE UNIQUE INDEX IF NOT EXISTS users_email_unique ON users(email);
-
-CREATE TABLE IF NOT EXISTS sessions (
-  token TEXT PRIMARY KEY,
-  user_id INTEGER NOT NULL REFERENCES users(id),
-  created_at INTEGER NOT NULL,
-  expires_at INTEGER NOT NULL
-);
-CREATE INDEX IF NOT EXISTS sessions_user_idx ON sessions(user_id);
-
-CREATE TABLE IF NOT EXISTS plans (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  academy_id INTEGER NOT NULL REFERENCES academies(id),
-  nome TEXT NOT NULL,
-  valor_centavos INTEGER NOT NULL
-);
-CREATE INDEX IF NOT EXISTS plans_academy_idx ON plans(academy_id);
-
-CREATE TABLE IF NOT EXISTS students (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  academy_id INTEGER NOT NULL REFERENCES academies(id),
-  plano_id INTEGER NOT NULL REFERENCES plans(id),
-  nome TEXT NOT NULL,
-  email TEXT,
-  telefone TEXT,
-  data_entrada TEXT NOT NULL,
-  data_saida TEXT,
-  status TEXT NOT NULL,
-  mensalidade_centavos INTEGER NOT NULL
-);
-CREATE INDEX IF NOT EXISTS students_academy_idx ON students(academy_id);
-CREATE INDEX IF NOT EXISTS students_academy_status_idx ON students(academy_id, status);
-
-CREATE TABLE IF NOT EXISTS access_events (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  academy_id INTEGER NOT NULL REFERENCES academies(id),
-  aluno_id INTEGER NOT NULL REFERENCES students(id),
-  timestamp INTEGER NOT NULL,
-  tipo_evento TEXT NOT NULL DEFAULT 'entrada'
-);
-CREATE INDEX IF NOT EXISTS access_aluno_ts_idx ON access_events(aluno_id, timestamp);
-CREATE INDEX IF NOT EXISTS access_academy_ts_idx ON access_events(academy_id, timestamp);
-
-CREATE TABLE IF NOT EXISTS expenses (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  academy_id INTEGER NOT NULL REFERENCES academies(id),
-  descricao TEXT NOT NULL,
-  categoria TEXT NOT NULL,
-  valor_centavos INTEGER NOT NULL,
-  data TEXT NOT NULL,
-  created_at INTEGER NOT NULL
-);
-CREATE INDEX IF NOT EXISTS expenses_academy_data_idx ON expenses(academy_id, data);
-
-CREATE TABLE IF NOT EXISTS promotions (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  academy_id INTEGER NOT NULL REFERENCES academies(id),
-  nome TEXT NOT NULL,
-  desconto_centavos INTEGER NOT NULL DEFAULT 0,
-  ativa INTEGER NOT NULL DEFAULT 1,
-  created_at INTEGER NOT NULL
-);
-CREATE INDEX IF NOT EXISTS promotions_academy_idx ON promotions(academy_id);
-
-CREATE TABLE IF NOT EXISTS academy_settings (
-  academy_id INTEGER PRIMARY KEY REFERENCES academies(id),
-  inactivity_medium INTEGER NOT NULL,
-  inactivity_high INTEGER NOT NULL,
-  inactivity_critical INTEGER NOT NULL,
-  frequency_drop_medium REAL NOT NULL,
-  frequency_drop_high REAL NOT NULL,
-  updated_at INTEGER NOT NULL
-);
-`);
-
-/**
- * Migrações aditivas de colunas. O SQLite não tem ADD COLUMN IF NOT EXISTS,
- * então a existência é checada antes — mantém bancos antigos utilizáveis.
- */
-function addColumnIfMissing(table: string, column: string, definition: string): void {
-  const cols = sqlite.pragma(`table_info(${table})`) as { name: string }[];
-  if (!cols.some((c) => c.name === column)) {
-    sqlite.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
-  }
+// Carrega o .env da raiz do repositório quando ele existe. Em produção as
+// variáveis vêm da plataforma e este arquivo simplesmente não está lá.
+try {
+  const aqui = path.dirname(fileURLToPath(import.meta.url));
+  process.loadEnvFile(path.resolve(aqui, '../../../.env'));
+} catch {
+  // Sem .env: seguimos com o ambiente já definido.
 }
 
-addColumnIfMissing('students', 'promocao_id', 'INTEGER REFERENCES promotions(id)');
-addColumnIfMissing('plans', 'duracao_meses', 'INTEGER NOT NULL DEFAULT 1');
+/**
+ * Conexão com o Postgres (Supabase).
+ *
+ * Usamos o transaction pooler, que não suporta prepared statements nomeados —
+ * daí `prepare: false`.
+ *
+ * O parser de int8 é substituído de propósito: por padrão o driver devolve
+ * bigint como string para não perder precisão, e todo o cálculo de métricas
+ * deste projeto trata timestamps e contagens como number. Um `COUNT(*)`
+ * chegando como "800" quebraria a aritmética em silêncio, sem erro de tipo.
+ * Os valores aqui (epoch ms e contagens) cabem com folga em Number.
+ */
+const bigintComoNumero = {
+  to: 20,
+  from: [20],
+  serialize: (x: number) => String(x),
+  parse: (x: string) => Number(x),
+};
+
+const url = process.env.DATABASE_URL;
+if (!url) {
+  throw new Error(
+    'DATABASE_URL não definida. Copie .env.example para .env e preencha a conexão do Supabase.',
+  );
+}
+
+/*
+ * Pool deliberadamente pequeno. Medindo contra o Supabase, uma consulta
+ * trivial leva ~150 ms (o RTT), mas quatro consultas simultâneas num pool
+ * frio levaram ~1,4 s: cada conexão nova paga um handshake TLS. Poucas
+ * conexões, reaproveitadas, custam menos que muitas conexões paralelas.
+ */
+export const sql = postgres(url, {
+  prepare: false,
+  ssl: 'require',
+  max: Number(process.env.DATABASE_POOL_MAX ?? 3),
+  idle_timeout: 300,
+  connect_timeout: 20,
+  types: { bigint: bigintComoNumero },
+});
+
+/**
+ * Abre as conexões do pool antes da primeira requisição, para o usuário não
+ * pagar o handshake TLS no primeiro clique.
+ */
+export async function aquecerConexoes(): Promise<void> {
+  const quantas = Number(process.env.DATABASE_POOL_MAX ?? 3);
+  await Promise.all(Array.from({ length: quantas }, () => sql`select 1`));
+}
+
+/**
+ * Converte os `?` das consultas para a numeração posicional do Postgres.
+ * Mantém o texto SQL do projeto praticamente inalterado na migração.
+ */
+function posicional(texto: string): string {
+  let i = 0;
+  return texto.replace(/\?/g, () => `$${++i}`);
+}
+
+type Params = readonly unknown[];
+
+/** Acesso ao banco. Os parâmetros são sempre vinculados, nunca interpolados. */
+export const db = {
+  /** Primeira linha, ou undefined. */
+  async one<T>(texto: string, ...params: Params): Promise<T | undefined> {
+    const linhas = await sql.unsafe(posicional(texto), params as never[]);
+    return linhas[0] as T | undefined;
+  },
+
+  /** Todas as linhas. */
+  async all<T>(texto: string, ...params: Params): Promise<T[]> {
+    const linhas = await sql.unsafe(posicional(texto), params as never[]);
+    return linhas as unknown as T[];
+  },
+
+  /** Comando sem retorno; devolve quantas linhas foram afetadas. */
+  async run(texto: string, ...params: Params): Promise<number> {
+    const resultado = await sql.unsafe(posicional(texto), params as never[]);
+    return resultado.count ?? 0;
+  },
+
+  /**
+   * Executa `fn` dentro de uma transação. Uma exceção desfaz tudo.
+   * Dentro dela, use o `tx` recebido — não o `db` global.
+   */
+  transaction<T>(fn: (tx: Transacao) => Promise<T>): Promise<T> {
+    return sql.begin(async (t) => {
+      const tx: Transacao = {
+        async one<R>(texto: string, ...params: Params): Promise<R | undefined> {
+          const linhas = await t.unsafe(posicional(texto), params as never[]);
+          return linhas[0] as R | undefined;
+        },
+        async all<R>(texto: string, ...params: Params): Promise<R[]> {
+          const linhas = await t.unsafe(posicional(texto), params as never[]);
+          return linhas as unknown as R[];
+        },
+        async run(texto: string, ...params: Params): Promise<number> {
+          const resultado = await t.unsafe(posicional(texto), params as never[]);
+          return resultado.count ?? 0;
+        },
+      };
+      return fn(tx);
+    }) as Promise<T>;
+  },
+};
+
+export interface Transacao {
+  one<T>(texto: string, ...params: Params): Promise<T | undefined>;
+  all<T>(texto: string, ...params: Params): Promise<T[]>;
+  run(texto: string, ...params: Params): Promise<number>;
+}
+
+export async function fecharConexao(): Promise<void> {
+  await sql.end();
+}
