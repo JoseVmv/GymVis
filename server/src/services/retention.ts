@@ -1,22 +1,25 @@
 import type { RetentionCohort, RetentionResponse } from '@gymvis/shared';
-import { sqlite } from '../db/client';
+import { db } from '../db/client';
 import { addMonths, monthKey, monthLabel, round4, startOfMonth, toDateStr } from '../lib/dates';
 
 const MONTHS = 12;
 
-const cohortRowsStmt = sqlite.prepare(`
+const COORTES = `
   SELECT data_entrada, data_saida
   FROM students
   WHERE academy_id = ?
-`);
+`;
 
 interface CohortRow {
   data_entrada: string;
   data_saida: string | null;
 }
 
-export function getRetention(academyId: number, now = new Date()): RetentionResponse {
-  const rows = cohortRowsStmt.all(academyId) as CohortRow[];
+export async function getRetention(
+  academyId: number,
+  now = new Date(),
+): Promise<RetentionResponse> {
+  const rows = await db.all<CohortRow>(COORTES, academyId);
   const today = toDateStr(now);
   const currentMonthStart = startOfMonth(now);
 

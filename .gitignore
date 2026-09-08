@@ -5,3 +5,6 @@ data/*.db-shm
 data/*.db-wal
 .env
 *.log
+
+# Capturas de verificação geradas sob demanda; a linha de base do SQLite fica versionada.
+verificacao/atual/

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import type { NextFunction, Request, Response } from 'express';
+import { aquecerConexoes } from './db/client';
 import { registerRoutes } from './http/routes';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -35,6 +36,13 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 const port = Number(process.env.PORT ?? 3001);
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`GymVis API em http://localhost:${port}`);
+  try {
+    const t0 = Date.now();
+    await aquecerConexoes();
+    console.log(`Conexões com o banco prontas em ${Date.now() - t0} ms`);
+  } catch (err) {
+    console.error('Falha ao conectar no banco:', err);
+  }
 });

@@ -6,7 +6,7 @@ import type {
   WeeklyFrequencyPoint,
 } from '@gymvis/shared';
 import { alertThresholdsFor } from '../config/alerts';
-import { sqlite } from '../db/client';
+import { db } from '../db/client';
 import { getRiskRules } from './settings';
 import {
   addDays,
@@ -43,20 +43,24 @@ function toListItem(m: StudentMetrics): StudentListItem {
   };
 }
 
-export function listStudents(academyId: number): StudentsResponse {
+export async function listStudents(academyId: number): Promise<StudentsResponse> {
+  const [metricas, rules] = await Promise.all([
+    computeStudentMetrics(academyId),
+    getRiskRules(academyId),
+  ]);
   return {
-    students: computeStudentMetrics(academyId).map(toListItem),
-    alertThresholds: alertThresholdsFor(getRiskRules(academyId)),
+    students: metricas.map(toListItem),
+    alertThresholds: alertThresholdsFor(rules),
     generatedAt: Date.now(),
   };
 }
 
-const accessTimestampsStmt = sqlite.prepare(`
+const ACESSOS_DO_ALUNO = `
   SELECT timestamp
   FROM access_events
   WHERE academy_id = ? AND aluno_id = ? AND tipo_evento = 'entrada'
   ORDER BY timestamp DESC
-`);
+`;
 
 /**
  * Acessos por semana desde a entrada (semanas com zero incluídas).
@@ -96,17 +100,20 @@ function buildWeeklySeries(
   return series;
 }
 
-export function getStudentProfile(
+export async function getStudentProfile(
   academyId: number,
   studentId: number,
-): StudentProfileResponse | null {
-  const metric = computeStudentMetrics(academyId).find((m) => m.id === studentId);
+): Promise<StudentProfileResponse | null> {
+  const now = new Date();
+  const [metricas, linhas] = await Promise.all([
+    computeStudentMetrics(academyId, now),
+    db.all<{ timestamp: number }>(ACESSOS_DO_ALUNO, academyId, studentId),
+  ]);
+
+  const metric = metricas.find((m) => m.id === studentId);
   if (!metric) return null;
 
-  const now = new Date();
-  const timestamps = (accessTimestampsStmt.all(academyId, studentId) as { timestamp: number }[]).map(
-    (r) => r.timestamp,
-  );
+  const timestamps = linhas.map((r) => r.timestamp);
 
   const recentAccesses: AccessRecord[] = timestamps
     .slice(0, MAX_RECENT_ACCESSES)

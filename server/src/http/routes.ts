@@ -1,5 +1,6 @@
-import type { Express, NextFunction, Request, RequestHandler, Response } from 'express';
+import type { Express, Response } from 'express';
 import { Router } from 'express';
+import { asyncHandler } from './asyncHandler';
 import { z } from 'zod';
 import type { MetricsConfigResponse } from '@gymvis/shared';
 import { getAuth, requireAuth } from '../auth/middleware';
@@ -29,18 +30,6 @@ import {
   updateStudent,
   type WriteResult,
 } from '../services/studentWrite';
-
-/**
- * O Express 4 não captura rejeições de handlers async — este wrapper
- * encaminha o erro para o error handler registrado em index.ts.
- */
-function asyncHandler(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>,
-): RequestHandler {
-  return (req, res, next) => {
-    fn(req, res, next).catch(next);
-  };
-}
 
 const overviewQuerySchema = z.object({
   period: z.coerce
@@ -151,33 +140,33 @@ export function registerRoutes(app: Express): void {
 
   registerAuthRoutes(api);
 
-  api.get('/overview', requireAuth, (req, res) => {
+  api.get('/overview', requireAuth, asyncHandler(async (req, res) => {
     const parsed = overviewQuerySchema.safeParse(req.query);
     if (!parsed.success) {
       res.status(400).json({ error: parsed.error.issues[0]?.message ?? 'Parâmetros inválidos' });
       return;
     }
-    res.json(getOverview(getAuth(res).academyId, parsed.data.period));
-  });
+    res.json(await getOverview(getAuth(res).academyId, parsed.data.period));
+  }));
 
-  api.get('/alerts', requireAuth, (req, res) => {
-    res.json(getAlerts(getAuth(res).academyId));
-  });
+  api.get('/alerts', requireAuth, asyncHandler(async (req, res) => {
+    res.json(await getAlerts(getAuth(res).academyId));
+  }));
 
   // Regras em vigor: a página Sobre explica as métricas com estes números,
   // em vez de repetir os limiares à mão e deixá-los divergir do cálculo.
-  api.get('/config', requireAuth, (_req, res) => {
-    const rules = getRiskRules(getAuth(res).academyId);
+  api.get('/config', requireAuth, asyncHandler(async (_req, res) => {
+    const rules = await getRiskRules(getAuth(res).academyId);
     const body: MetricsConfigResponse = {
       risk: { ...riskConfig, ...rules },
       alerts: alertThresholdsFor(rules),
     };
     res.json(body);
-  });
+  }));
 
   // ------------------------------------------------------------ Rendimentos
 
-  api.get('/finance', requireAuth, (req, res) => {
+  api.get('/finance', requireAuth, asyncHandler(async (req, res) => {
     const parsed = z.coerce
       .number()
       .refine((v) => v === 6 || v === 12 || v === 24, { message: 'Período inválido' })
@@ -187,19 +176,19 @@ export function registerRoutes(app: Express): void {
       res.status(400).json({ error: firstIssue(parsed.error) });
       return;
     }
-    res.json(getFinance(getAuth(res).academyId, parsed.data));
-  });
+    res.json(await getFinance(getAuth(res).academyId, parsed.data));
+  }));
 
-  api.post('/expenses', requireAuth, (req, res) => {
+  api.post('/expenses', requireAuth, asyncHandler(async (req, res) => {
     const parsed = expenseSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: firstIssue(parsed.error) });
       return;
     }
-    res.json({ id: createExpense(getAuth(res).academyId, parsed.data) });
-  });
+    res.json({ id: await createExpense(getAuth(res).academyId, parsed.data) });
+  }));
 
-  api.put('/expenses/:id', requireAuth, (req, res) => {
+  api.put('/expenses/:id', requireAuth, asyncHandler(async (req, res) => {
     const id = idParamSchema.safeParse(req.params.id);
     const parsed = expenseSchema.safeParse(req.body);
     if (!id.success) {
@@ -210,48 +199,48 @@ export function registerRoutes(app: Express): void {
       res.status(400).json({ error: firstIssue(parsed.error) });
       return;
     }
-    if (!updateExpense(getAuth(res).academyId, id.data, parsed.data)) {
+    if (!(await updateExpense(getAuth(res).academyId, id.data, parsed.data))) {
       res.status(404).json({ error: 'Despesa não encontrada' });
       return;
     }
     res.json({ id: id.data });
-  });
+  }));
 
-  api.delete('/expenses/:id', requireAuth, (req, res) => {
+  api.delete('/expenses/:id', requireAuth, asyncHandler(async (req, res) => {
     const id = idParamSchema.safeParse(req.params.id);
-    if (!id.success || !deleteExpense(getAuth(res).academyId, id.data)) {
+    if (!id.success || !(await deleteExpense(getAuth(res).academyId, id.data))) {
       res.status(404).json({ error: 'Despesa não encontrada' });
       return;
     }
     res.json({ ok: true });
-  });
+  }));
 
   // ----------------------------------------------------------- Configurações
 
-  api.get('/settings', requireAuth, (_req, res) => {
-    res.json(getSettingsPage(getAuth(res).academyId));
-  });
+  api.get('/settings', requireAuth, asyncHandler(async (_req, res) => {
+    res.json(await getSettingsPage(getAuth(res).academyId));
+  }));
 
-  api.put('/settings', requireAuth, (req, res) => {
+  api.put('/settings', requireAuth, asyncHandler(async (req, res) => {
     const parsed = settingsSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: firstIssue(parsed.error) });
       return;
     }
-    saveSettings(getAuth(res).academyId, parsed.data);
-    res.json(getSettingsPage(getAuth(res).academyId));
-  });
+    await saveSettings(getAuth(res).academyId, parsed.data);
+    res.json(await getSettingsPage(getAuth(res).academyId));
+  }));
 
-  api.post('/plans', requireAuth, (req, res) => {
+  api.post('/plans', requireAuth, asyncHandler(async (req, res) => {
     const parsed = planSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: firstIssue(parsed.error) });
       return;
     }
-    res.json({ id: createPlan(getAuth(res).academyId, parsed.data) });
-  });
+    res.json({ id: await createPlan(getAuth(res).academyId, parsed.data) });
+  }));
 
-  api.put('/plans/:id', requireAuth, (req, res) => {
+  api.put('/plans/:id', requireAuth, asyncHandler(async (req, res) => {
     const id = idParamSchema.safeParse(req.params.id);
     const parsed = planSchema.safeParse(req.body);
     if (!id.success) {
@@ -262,20 +251,20 @@ export function registerRoutes(app: Express): void {
       res.status(400).json({ error: firstIssue(parsed.error) });
       return;
     }
-    if (!updatePlan(getAuth(res).academyId, id.data, parsed.data)) {
+    if (!(await updatePlan(getAuth(res).academyId, id.data, parsed.data))) {
       res.status(404).json({ error: 'Plano não encontrado' });
       return;
     }
     res.json({ id: id.data });
-  });
+  }));
 
-  api.delete('/plans/:id', requireAuth, (req, res) => {
+  api.delete('/plans/:id', requireAuth, asyncHandler(async (req, res) => {
     const id = idParamSchema.safeParse(req.params.id);
     if (!id.success) {
       res.status(404).json({ error: 'Plano não encontrado' });
       return;
     }
-    const result = deletePlan(getAuth(res).academyId, id.data);
+    const result = await deletePlan(getAuth(res).academyId, id.data);
     if (result === 'em-uso') {
       res.status(409).json({ error: 'Há alunos neste plano. Mova-os antes de excluir.' });
       return;
@@ -285,18 +274,18 @@ export function registerRoutes(app: Express): void {
       return;
     }
     res.json({ ok: true });
-  });
+  }));
 
-  api.post('/promotions', requireAuth, (req, res) => {
+  api.post('/promotions', requireAuth, asyncHandler(async (req, res) => {
     const parsed = promotionSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: firstIssue(parsed.error) });
       return;
     }
-    res.json({ id: createPromotion(getAuth(res).academyId, parsed.data) });
-  });
+    res.json({ id: await createPromotion(getAuth(res).academyId, parsed.data) });
+  }));
 
-  api.put('/promotions/:id', requireAuth, (req, res) => {
+  api.put('/promotions/:id', requireAuth, asyncHandler(async (req, res) => {
     const id = idParamSchema.safeParse(req.params.id);
     const parsed = promotionSchema.safeParse(req.body);
     if (!id.success) {
@@ -307,47 +296,47 @@ export function registerRoutes(app: Express): void {
       res.status(400).json({ error: firstIssue(parsed.error) });
       return;
     }
-    if (!updatePromotion(getAuth(res).academyId, id.data, parsed.data)) {
+    if (!(await updatePromotion(getAuth(res).academyId, id.data, parsed.data))) {
       res.status(404).json({ error: 'Promoção não encontrada' });
       return;
     }
     res.json({ id: id.data });
-  });
+  }));
 
-  api.delete('/promotions/:id', requireAuth, (req, res) => {
+  api.delete('/promotions/:id', requireAuth, asyncHandler(async (req, res) => {
     const id = idParamSchema.safeParse(req.params.id);
-    if (!id.success || !deletePromotion(getAuth(res).academyId, id.data)) {
+    if (!id.success || !(await deletePromotion(getAuth(res).academyId, id.data))) {
       res.status(404).json({ error: 'Promoção não encontrada' });
       return;
     }
     res.json({ ok: true });
-  });
+  }));
 
-  api.get('/revenue-at-risk', requireAuth, (req, res) => {
-    res.json(getRevenueAtRisk(getAuth(res).academyId));
-  });
+  api.get('/revenue-at-risk', requireAuth, asyncHandler(async (req, res) => {
+    res.json(await getRevenueAtRisk(getAuth(res).academyId));
+  }));
 
-  api.get('/charts', requireAuth, (req, res) => {
-    res.json(getCharts(getAuth(res).academyId));
-  });
+  api.get('/charts', requireAuth, asyncHandler(async (req, res) => {
+    res.json(await getCharts(getAuth(res).academyId));
+  }));
 
-  api.get('/students', requireAuth, (req, res) => {
-    res.json(listStudents(getAuth(res).academyId));
-  });
+  api.get('/students', requireAuth, asyncHandler(async (req, res) => {
+    res.json(await listStudents(getAuth(res).academyId));
+  }));
 
-  api.get('/students/:id', requireAuth, (req, res) => {
+  api.get('/students/:id', requireAuth, asyncHandler(async (req, res) => {
     const parsed = idParamSchema.safeParse(req.params.id);
     const profile = parsed.success
-      ? getStudentProfile(getAuth(res).academyId, parsed.data)
+      ? await getStudentProfile(getAuth(res).academyId, parsed.data)
       : null;
     if (!profile) {
       res.status(404).json({ error: 'Aluno não encontrado' });
       return;
     }
     res.json(profile);
-  });
+  }));
 
-  api.post('/students', requireAuth, (req, res) => {
+  api.post('/students', requireAuth, asyncHandler(async (req, res) => {
     const parsed = studentSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: firstIssue(parsed.error) });
@@ -356,15 +345,15 @@ export function registerRoutes(app: Express): void {
     const { email, telefone, ...rest } = parsed.data;
     sendWriteResult(
       res,
-      createStudent(getAuth(res).academyId, {
+      await createStudent(getAuth(res).academyId, {
         ...rest,
         email: email || null,
         telefone: telefone || null,
       }),
     );
-  });
+  }));
 
-  api.put('/students/:id', requireAuth, (req, res) => {
+  api.put('/students/:id', requireAuth, asyncHandler(async (req, res) => {
     const id = idParamSchema.safeParse(req.params.id);
     const parsed = studentSchema.safeParse(req.body);
     if (!id.success) {
@@ -378,24 +367,24 @@ export function registerRoutes(app: Express): void {
     const { email, telefone, ...rest } = parsed.data;
     sendWriteResult(
       res,
-      updateStudent(getAuth(res).academyId, id.data, {
+      await updateStudent(getAuth(res).academyId, id.data, {
         ...rest,
         email: email || null,
         telefone: telefone || null,
       }),
     );
-  });
+  }));
 
-  api.delete('/students/:id', requireAuth, (req, res) => {
+  api.delete('/students/:id', requireAuth, asyncHandler(async (req, res) => {
     const id = idParamSchema.safeParse(req.params.id);
-    if (!id.success || !deleteStudent(getAuth(res).academyId, id.data)) {
+    if (!id.success || !(await deleteStudent(getAuth(res).academyId, id.data))) {
       res.status(404).json({ error: 'Aluno não encontrado' });
       return;
     }
     res.json({ ok: true });
-  });
+  }));
 
-  api.post('/students/:id/accesses', requireAuth, (req, res) => {
+  api.post('/students/:id/accesses', requireAuth, asyncHandler(async (req, res) => {
     const id = idParamSchema.safeParse(req.params.id);
     const parsed = accessSchema.safeParse(req.body);
     if (!id.success) {
@@ -406,7 +395,7 @@ export function registerRoutes(app: Express): void {
       res.status(400).json({ error: firstIssue(parsed.error) });
       return;
     }
-    const result = addAccess(getAuth(res).academyId, id.data, parsed.data.timestamp);
+    const result = await addAccess(getAuth(res).academyId, id.data, parsed.data.timestamp);
     const erros: Record<string, { status: number; error: string }> = {
       'nao-encontrado': { status: 404, error: 'Aluno não encontrado' },
       'antes-da-entrada': { status: 400, error: 'O acesso é anterior à data de entrada' },
@@ -418,18 +407,18 @@ export function registerRoutes(app: Express): void {
       return;
     }
     res.json({ ok: true });
-  });
+  }));
 
-  api.get('/retention', requireAuth, (req, res) => {
-    res.json(getRetention(getAuth(res).academyId));
-  });
+  api.get('/retention', requireAuth, asyncHandler(async (req, res) => {
+    res.json(await getRetention(getAuth(res).academyId));
+  }));
 
   api.post(
     '/demo-data',
     requireAuth,
     asyncHandler(async (req, res) => {
       const { academyId } = getAuth(res);
-      if (academyHasStudents(academyId)) {
+      if (await academyHasStudents(academyId)) {
         res.status(409).json({ error: 'Esta academia já possui dados' });
         return;
       }

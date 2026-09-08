@@ -3,12 +3,14 @@ import { index, integer, real, sqliteTable, text, uniqueIndex } from 'drizzle-or
 /**
  * Esquema declarativo do banco — a descrição de referência das tabelas.
  *
- * As consultas são SQL cru via better-sqlite3 (síncrono, direto, adequado ao
- * tamanho deste MVP); este arquivo existe como espelho tipado do DDL em
- * ./client.ts e como ponto de partida da migração para PostgreSQL/Supabase,
- * onde basta trocar o dialeto do Drizzle: chaves inteiras (→ identity),
- * timestamps em epoch ms (→ timestamptz/bigint), datas de calendário como
- * 'YYYY-MM-DD' (→ date), dinheiro em centavos (→ integer).
+ * As consultas são SQL cru via postgres.js; este arquivo é o espelho tipado
+ * do DDL versionado em ../../migrations/. Ainda está em `sqlite-core`: ao
+ * portá-lo para `pg-core` ele passa a servir também de fonte para geração
+ * automática de migrações. Enquanto isso, a fonte da verdade do schema são
+ * os arquivos SQL de migrations/.
+ *
+ * Convenções: chaves em bigint identity, instantes em epoch ms (bigint),
+ * datas de calendário como texto 'YYYY-MM-DD' e dinheiro em centavos.
  *
  * Os eventos de acesso são a fonte de verdade: frequência, risco e receita em
  * risco são sempre derivados — nada disso é persistido.

@@ -9,7 +9,7 @@
  */
 import type { EventType, RiskLevel, StudentStatus } from '@gymvis/shared';
 import { classifyRisk, riskConfig } from '../config/risk';
-import { sqlite } from '../db/client';
+import { db, type Transacao } from '../db/client';
 import { FIRST_NAMES, LAST_NAMES } from './names';
 import { Rng } from './rng';
 
@@ -825,10 +825,10 @@ function validateAndReport(drafts: StudentDraft[], today: Date, now: number): vo
 
 // ------------------------------------------------------------------ geração
 
-export function generateAcademyData(opts: GenerateOptions): {
+export async function generateAcademyData(opts: GenerateOptions): Promise<{
   students: number;
   accessEvents: number;
-} {
+}> {
   if (!Number.isInteger(opts.students) || opts.students <= 0) {
     throw new Error('Quantidade de alunos inválida.');
   }
@@ -862,46 +862,71 @@ export function generateAcademyData(opts: GenerateOptions): {
   ensureRiskCoverage(rng, drafts, today, now);
   validateAndReport(drafts, today, now);
 
-  const insertPlan = sqlite.prepare(
-    'INSERT INTO plans (academy_id, nome, valor_centavos, duracao_meses) VALUES (?, ?, ?, ?)',
-  );
-  const insertStudent = sqlite.prepare(
-    'INSERT INTO students (academy_id, plano_id, nome, email, telefone, data_entrada, data_saida, status, mensalidade_centavos) ' +
-      'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-  );
-  const insertEvent = sqlite.prepare(
-    'INSERT INTO access_events (academy_id, aluno_id, timestamp, tipo_evento) VALUES (?, ?, ?, ?)',
-  );
+  // Inserção em lote: linha a linha, 136 mil eventos pela rede levariam horas.
+  // Cada INSERT leva LOTE linhas; tudo dentro de uma transação.
+  const LOTE = 1000;
 
   let accessEvents = 0;
-  const persist = sqlite.transaction(() => {
-    const planIds = PLAN_SPECS.map((p) =>
-      Number(
-        insertPlan.run(opts.academyId, p.nome, p.valorCentavos, p.commitmentMonths).lastInsertRowid,
-      ),
-    );
-    for (const draft of drafts) {
-      const studentId = Number(
-        insertStudent.run(
-          opts.academyId,
-          planIds[draft.planIndex],
-          draft.nome,
-          draft.email,
-          draft.telefone,
-          fmtDate(draft.join),
-          draft.exit ? fmtDate(draft.exit) : null,
-          draft.status,
-          draft.mensalidadeCentavos,
-        ).lastInsertRowid,
+  await db.transaction(async (tx) => {
+    const planIds: number[] = [];
+    for (const p of PLAN_SPECS) {
+      const linha = await tx.one<{ id: number }>(
+        'INSERT INTO plans (academy_id, nome, valor_centavos, duracao_meses) VALUES (?, ?, ?, ?) RETURNING id',
+        opts.academyId,
+        p.nome,
+        p.valorCentavos,
+        p.commitmentMonths,
       );
-      draft.events.sort((a, b) => a.ts - b.ts);
-      for (const e of draft.events) {
-        insertEvent.run(opts.academyId, studentId, e.ts, e.tipo);
-        accessEvents++;
+      planIds.push(linha!.id);
+    }
+
+    // Alunos em lote; o RETURNING devolve os ids na ordem inserida.
+    const idsAlunos: number[] = [];
+    for (let i = 0; i < drafts.length; i += LOTE) {
+      const fatia = drafts.slice(i, i + LOTE);
+      const valores = fatia.map(() => '(?, ?, ?, ?, ?, ?, ?, ?, ?)').join(', ');
+      const params: unknown[] = [];
+      for (const d of fatia) {
+        params.push(
+          opts.academyId,
+          planIds[d.planIndex],
+          d.nome,
+          d.email,
+          d.telefone,
+          fmtDate(d.join),
+          d.exit ? fmtDate(d.exit) : null,
+          d.status,
+          d.mensalidadeCentavos,
+        );
       }
+      const linhas = await tx.all<{ id: number }>(
+        'INSERT INTO students (academy_id, plano_id, nome, email, telefone, data_entrada, data_saida, status, mensalidade_centavos) VALUES ' +
+          valores +
+          ' RETURNING id',
+        ...params,
+      );
+      for (const l of linhas) idsAlunos.push(l.id);
+    }
+
+    // Eventos de acesso de todos os alunos, também em lote.
+    const eventos: { alunoId: number; ts: number; tipo: string }[] = [];
+    drafts.forEach((d, i) => {
+      d.events.sort((a, b) => a.ts - b.ts);
+      for (const e of d.events) eventos.push({ alunoId: idsAlunos[i], ts: e.ts, tipo: e.tipo });
+    });
+
+    for (let i = 0; i < eventos.length; i += LOTE) {
+      const fatia = eventos.slice(i, i + LOTE);
+      const valores = fatia.map(() => '(?, ?, ?, ?)').join(', ');
+      const params: unknown[] = [];
+      for (const e of fatia) params.push(opts.academyId, e.alunoId, e.ts, e.tipo);
+      await tx.run(
+        'INSERT INTO access_events (academy_id, aluno_id, timestamp, tipo_evento) VALUES ' + valores,
+        ...params,
+      );
+      accessEvents += fatia.length;
     }
   });
-  persist();
 
   return { students: drafts.length, accessEvents };
 }

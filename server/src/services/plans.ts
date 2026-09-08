@@ -1,27 +1,26 @@
 import type { Plan, PlanPayload } from '@gymvis/shared';
-import { sqlite } from '../db/client';
+import { invalidarCache } from './metricsCache';
+import { db } from '../db/client';
 
-const listStmt = sqlite.prepare(`
+const LISTAR = `
   SELECT p.id, p.nome, p.valor_centavos, p.duracao_meses,
          (SELECT COUNT(*) FROM students s WHERE s.plano_id = p.id) AS alunos
   FROM plans p
   WHERE p.academy_id = ?
-  ORDER BY p.duracao_meses, p.nome COLLATE NOCASE
-`);
+  ORDER BY p.duracao_meses, lower(p.nome) COLLATE "pt-BR-x-icu", p.id
+`;
 
-const insertStmt = sqlite.prepare(
-  'INSERT INTO plans (academy_id, nome, valor_centavos, duracao_meses) VALUES (?, ?, ?, ?)',
-);
+const INSERIR =
+  'INSERT INTO plans (academy_id, nome, valor_centavos, duracao_meses) VALUES (?, ?, ?, ?) RETURNING id';
 
-const updateStmt = sqlite.prepare(
-  'UPDATE plans SET nome = ?, valor_centavos = ?, duracao_meses = ? WHERE id = ? AND academy_id = ?',
-);
+const ATUALIZAR =
+  'UPDATE plans SET nome = ?, valor_centavos = ?, duracao_meses = ? WHERE id = ? AND academy_id = ?';
 
-const deleteStmt = sqlite.prepare('DELETE FROM plans WHERE id = ? AND academy_id = ?');
+const APAGAR = 'DELETE FROM plans WHERE id = ? AND academy_id = ?';
 
-const countStudentsStmt = sqlite.prepare(
-  'SELECT COUNT(*) AS c FROM students WHERE plano_id = ? AND academy_id = ?',
-);
+const CONTAR_ALUNOS = 'SELECT COUNT(*) AS c FROM students WHERE plano_id = ? AND academy_id = ?';
+
+const PERTENCE = 'SELECT 1 AS ok FROM plans WHERE id = ? AND academy_id = ?';
 
 interface PlanRow {
   id: number;
@@ -31,8 +30,9 @@ interface PlanRow {
   alunos: number;
 }
 
-export function listPlans(academyId: number): Plan[] {
-  return (listStmt.all(academyId) as PlanRow[]).map((r) => ({
+export async function listPlans(academyId: number): Promise<Plan[]> {
+  const linhas = await db.all<PlanRow>(LISTAR, academyId);
+  return linhas.map((r) => ({
     id: r.id,
     nome: r.nome,
     valorCentavos: r.valor_centavos,
@@ -41,39 +41,45 @@ export function listPlans(academyId: number): Plan[] {
   }));
 }
 
-export function createPlan(academyId: number, payload: PlanPayload): number {
-  const info = insertStmt.run(
+export async function createPlan(academyId: number, payload: PlanPayload): Promise<number> {
+  const linha = await db.one<{ id: number }>(
+    INSERIR,
     academyId,
     payload.nome.trim(),
     payload.valorCentavos,
     payload.duracaoMeses,
   );
-  return Number(info.lastInsertRowid);
+  invalidarCache(academyId);
+  return linha!.id;
 }
 
 /** false quando o plano não existe nesta academia. */
-export function updatePlan(academyId: number, id: number, payload: PlanPayload): boolean {
-  const info = updateStmt.run(
+export async function updatePlan(
+  academyId: number,
+  id: number,
+  payload: PlanPayload,
+): Promise<boolean> {
+  const afetadas = await db.run(
+    ATUALIZAR,
     payload.nome.trim(),
     payload.valorCentavos,
     payload.duracaoMeses,
     id,
     academyId,
   );
-  return info.changes > 0;
+  invalidarCache(academyId);
+  return afetadas > 0;
 }
 
 export type PlanDeleteResult = 'ok' | 'nao-encontrado' | 'em-uso';
 
-export function deletePlan(academyId: number, id: number): PlanDeleteResult {
-  const usados = (countStudentsStmt.get(id, academyId) as { c: number }).c;
-  if (usados > 0) return 'em-uso';
-  return deleteStmt.run(id, academyId).changes > 0 ? 'ok' : 'nao-encontrado';
+export async function deletePlan(academyId: number, id: number): Promise<PlanDeleteResult> {
+  const linha = await db.one<{ c: number }>(CONTAR_ALUNOS, id, academyId);
+  if ((linha?.c ?? 0) > 0) return 'em-uso';
+  invalidarCache(academyId);
+  return (await db.run(APAGAR, id, academyId)) > 0 ? 'ok' : 'nao-encontrado';
 }
 
-export function planBelongsToAcademy(academyId: number, planId: number): boolean {
-  const row = sqlite
-    .prepare('SELECT 1 AS ok FROM plans WHERE id = ? AND academy_id = ?')
-    .get(planId, academyId);
-  return row !== undefined;
+export async function planBelongsToAcademy(academyId: number, planId: number): Promise<boolean> {
+  return (await db.one(PERTENCE, planId, academyId)) !== undefined;
 }

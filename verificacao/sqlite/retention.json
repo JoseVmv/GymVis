@@ -1,0 +1,247 @@
+{
+ "averageCurve": [
+  1,
+  0.9721,
+  0.875,
+  0.8115,
+  0.7653,
+  0.7406,
+  0.7115,
+  0.6959,
+  0.6718,
+  0.6615,
+  0.68,
+  0.6071
+ ],
+ "cohorts": [
+  {
+   "cohort": "2025-10",
+   "label": "out/25",
+   "size": 28,
+   "values": [
+    1,
+    0.9643,
+    0.8571,
+    0.8571,
+    0.8214,
+    0.8214,
+    0.7143,
+    0.7143,
+    0.6786,
+    0.6786,
+    0.6429,
+    0.6071
+   ]
+  },
+  {
+   "cohort": "2025-11",
+   "label": "nov/25",
+   "size": 22,
+   "values": [
+    1,
+    1,
+    0.8182,
+    0.7727,
+    0.7727,
+    0.7727,
+    0.7273,
+    0.7273,
+    0.7273,
+    0.7273,
+    0.7273,
+    null
+   ]
+  },
+  {
+   "cohort": "2025-12",
+   "label": "dez/25",
+   "size": 15,
+   "values": [
+    1,
+    0.9333,
+    0.9333,
+    0.7333,
+    0.7333,
+    0.7333,
+    0.6667,
+    0.6,
+    0.5333,
+    0.5333,
+    null,
+    null
+   ]
+  },
+  {
+   "cohort": "2026-01",
+   "label": "jan/26",
+   "size": 66,
+   "values": [
+    1,
+    0.9545,
+    0.8788,
+    0.7727,
+    0.7273,
+    0.7121,
+    0.7121,
+    0.6818,
+    0.6818,
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "cohort": "2026-02",
+   "label": "fev/26",
+   "size": 40,
+   "values": [
+    1,
+    1,
+    0.925,
+    0.875,
+    0.775,
+    0.75,
+    0.725,
+    0.725,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "cohort": "2026-03",
+   "label": "mar/26",
+   "size": 37,
+   "values": [
+    1,
+    1,
+    0.8378,
+    0.7838,
+    0.7297,
+    0.7297,
+    0.7027,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "cohort": "2026-04",
+   "label": "abr/26",
+   "size": 31,
+   "values": [
+    1,
+    0.9355,
+    0.8387,
+    0.7742,
+    0.7419,
+    0.7097,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "cohort": "2026-05",
+   "label": "mai/26",
+   "size": 38,
+   "values": [
+    1,
+    1,
+    0.9211,
+    0.8421,
+    0.8421,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "cohort": "2026-06",
+   "label": "jun/26",
+   "size": 36,
+   "values": [
+    1,
+    0.9444,
+    0.8889,
+    0.8611,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "cohort": "2026-07",
+   "label": "jul/26",
+   "size": 39,
+   "values": [
+    1,
+    0.9744,
+    0.8462,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "cohort": "2026-08",
+   "label": "ago/26",
+   "size": 42,
+   "values": [
+    1,
+    0.9762,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  },
+  {
+   "cohort": "2026-09",
+   "label": "set/26",
+   "size": 37,
+   "values": [
+    1,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ]
+  }
+ ],
+ "months": 12
+}

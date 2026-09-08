@@ -1,0 +1,16 @@
+{
+ "activeStudents": 511,
+ "avgWeeklyFrequency": 2.09,
+ "avgWeeklyFrequencyPrev": 2.35,
+ "cancellations": 46,
+ "cancellationsPrev": 46,
+ "delinquentStudents": 37,
+ "netGrowth": 95,
+ "netGrowthPrev": 64,
+ "newStudents": 141,
+ "newStudentsPrev": 110,
+ "pausedStudents": 14,
+ "periodDays": 90,
+ "totalAccesses": 14075,
+ "totalAccessesPrev": 12965
+}

@@ -1,7 +1,8 @@
 import type { RiskLevel, StudentStatus } from '@gymvis/shared';
 import { classifyRisk, riskConfig } from '../config/risk';
-import { sqlite } from '../db/client';
+import { db } from '../db/client';
 import { MS_PER_DAY, calendarDaysBetween, floorDaysBetween, parseDateStr } from '../lib/dates';
+import { gravarCache, lerCache } from './metricsCache';
 import { getRiskRules } from './settings';
 
 /**
@@ -58,7 +59,7 @@ interface StudentRow {
   promocao_nome: string | null;
 }
 
-const studentsStmt = sqlite.prepare(`
+const ALUNOS = `
   SELECT s.id, s.nome, s.email, s.telefone, s.status, s.data_entrada, s.data_saida,
          s.mensalidade_centavos, s.plano_id, p.nome AS plano_nome,
          s.promocao_id, pr.nome AS promocao_nome
@@ -66,35 +67,35 @@ const studentsStmt = sqlite.prepare(`
   JOIN plans p ON p.id = s.plano_id
   LEFT JOIN promotions pr ON pr.id = s.promocao_id
   WHERE s.academy_id = ?
-  ORDER BY s.nome COLLATE NOCASE
-`);
+  ORDER BY lower(s.nome) COLLATE "pt-BR-x-icu", s.id
+`;
 
-const lastAccessStmt = sqlite.prepare(`
+const ULTIMO_ACESSO = `
   SELECT aluno_id, MAX(timestamp) AS last_ts
   FROM access_events
   WHERE academy_id = ? AND tipo_evento = 'entrada'
   GROUP BY aluno_id
-`);
+`;
 
-const recentCountStmt = sqlite.prepare(`
+const CONTAGEM_RECENTE = `
   SELECT aluno_id, COUNT(*) AS c
   FROM access_events
   WHERE academy_id = ? AND tipo_evento = 'entrada' AND timestamp >= ?
   GROUP BY aluno_id
-`);
+`;
 
-const baselineCountStmt = sqlite.prepare(`
+const CONTAGEM_BASELINE = `
   SELECT aluno_id, COUNT(*) AS c
   FROM access_events
   WHERE academy_id = ? AND tipo_evento = 'entrada' AND timestamp >= ? AND timestamp < ?
   GROUP BY aluno_id
-`);
+`;
 
-const enrolledCountAtStmt = sqlite.prepare(`
+const MATRICULADOS_EM = `
   SELECT COUNT(*) AS c
   FROM students
   WHERE academy_id = ? AND data_entrada <= ? AND (data_saida IS NULL OR data_saida > ?)
-`);
+`;
 
 /**
  * Quantos alunos estavam matriculados na data `dateStr` ('YYYY-MM-DD'),
@@ -102,39 +103,46 @@ const enrolledCountAtStmt = sqlite.prepare(`
  * (o banco guarda o status atual, não seu histórico) e serve de denominador
  * para métricas de frequência comparáveis entre períodos.
  */
-export function enrolledCountAt(academyId: number, dateStr: string): number {
-  return (enrolledCountAtStmt.get(academyId, dateStr, dateStr) as { c: number }).c;
+export async function enrolledCountAt(academyId: number, dateStr: string): Promise<number> {
+  const linha = await db.one<{ c: number }>(MATRICULADOS_EM, academyId, dateStr, dateStr);
+  return linha?.c ?? 0;
 }
 
-export function computeStudentMetrics(academyId: number, now = new Date()): StudentMetrics[] {
-  const rules = getRiskRules(academyId);
+export async function computeStudentMetrics(
+  academyId: number,
+  now = new Date(),
+): Promise<StudentMetrics[]> {
+  const cacheado = lerCache(academyId, now.getTime());
+  if (cacheado) return cacheado;
+
+  const rules = await getRiskRules(academyId);
   const nowMs = now.getTime();
   const recentStartMs = nowMs - riskConfig.recentWindowDays * MS_PER_DAY;
   const baselineStartMs = recentStartMs - riskConfig.baselineWindowDays * MS_PER_DAY;
   const recentWeeks = riskConfig.recentWindowDays / 7;
 
-  const rows = studentsStmt.all(academyId) as StudentRow[];
+  // As quatro consultas são independentes: uma ida ao banco em vez de quatro
+  // sequenciais importa quando o banco está a um RTT de distância.
+  const [rows, ultimos, recentes, baselines] = await Promise.all([
+    db.all<StudentRow>(ALUNOS, academyId),
+    db.all<{ aluno_id: number; last_ts: number }>(ULTIMO_ACESSO, academyId),
+    db.all<{ aluno_id: number; c: number }>(CONTAGEM_RECENTE, academyId, recentStartMs),
+    db.all<{ aluno_id: number; c: number }>(
+      CONTAGEM_BASELINE,
+      academyId,
+      baselineStartMs,
+      recentStartMs,
+    ),
+  ]);
 
   const lastAccess = new Map<number, number>();
-  for (const r of lastAccessStmt.all(academyId) as { aluno_id: number; last_ts: number }[]) {
-    lastAccess.set(r.aluno_id, r.last_ts);
-  }
+  for (const r of ultimos) lastAccess.set(r.aluno_id, r.last_ts);
   const recentCounts = new Map<number, number>();
-  for (const r of recentCountStmt.all(academyId, recentStartMs) as {
-    aluno_id: number;
-    c: number;
-  }[]) {
-    recentCounts.set(r.aluno_id, r.c);
-  }
+  for (const r of recentes) recentCounts.set(r.aluno_id, r.c);
   const baselineCounts = new Map<number, number>();
-  for (const r of baselineCountStmt.all(academyId, baselineStartMs, recentStartMs) as {
-    aluno_id: number;
-    c: number;
-  }[]) {
-    baselineCounts.set(r.aluno_id, r.c);
-  }
+  for (const r of baselines) baselineCounts.set(r.aluno_id, r.c);
 
-  return rows.map((row) => {
+  const metricas = rows.map((row) => {
     const entryMs = parseDateStr(row.data_entrada).getTime();
     const daysSinceJoin = Math.max(0, calendarDaysBetween(entryMs, nowMs));
 
@@ -194,4 +202,7 @@ export function computeStudentMetrics(academyId: number, now = new Date()): Stud
       riskReasons: reasons,
     };
   });
+
+  gravarCache(academyId, metricas, now.getTime());
+  return metricas;
 }

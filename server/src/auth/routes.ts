@@ -1,7 +1,8 @@
 import type { Response, Router } from 'express';
 import { z } from 'zod';
 import type { AuthResponse } from '@gymvis/shared';
-import { sqlite } from '../db/client';
+import { db } from '../db/client';
+import { asyncHandler } from '../http/asyncHandler';
 import { hashPassword, verifyPassword } from './password';
 import { createRateLimit } from './rateLimit';
 import {
@@ -14,8 +15,8 @@ import {
 } from './session';
 
 /**
- * Rotas de autenticação. Handlers são todos síncronos (better-sqlite3 e
- * scrypt são síncronos), então o Express 4 captura exceções normalmente.
+ * Rotas de autenticação. Tudo que toca o banco é assíncrono, então cada
+ * handler passa pelo asyncHandler para que erros cheguem ao tratador central.
  */
 
 const registerSchema = z.object({
@@ -60,39 +61,52 @@ interface UserRow {
   academy_nome: string;
 }
 
-const findUserByEmailStmt = sqlite.prepare(`
+const BUSCAR_POR_EMAIL = `
   SELECT u.id, u.nome, u.email, u.password_hash, u.academy_id, a.nome AS academy_nome
   FROM users u
   JOIN academies a ON a.id = u.academy_id
   WHERE u.email = ?
-`);
-const insertAcademyStmt = sqlite.prepare('INSERT INTO academies (nome, created_at) VALUES (?, ?)');
-const insertUserStmt = sqlite.prepare(
-  'INSERT INTO users (academy_id, nome, email, password_hash, created_at) VALUES (?, ?, ?, ?, ?)',
-);
+`;
+const INSERIR_ACADEMIA = 'INSERT INTO academies (nome, created_at) VALUES (?, ?) RETURNING id';
+const INSERIR_USUARIO =
+  'INSERT INTO users (academy_id, nome, email, password_hash, created_at) VALUES (?, ?, ?, ?, ?) RETURNING id';
 
-const createAccountTx = sqlite.transaction(
-  (nome: string, academiaNome: string, email: string, passwordHash: string) => {
+/**
+ * Cada conta nasce com a sua própria academia: é o que garante que uma
+ * academia nunca enxergue os dados de outra. Academia e usuário são criados
+ * na mesma transação — uma academia órfã deixaria o cadastro pela metade.
+ */
+function createAccount(
+  nome: string,
+  academiaNome: string,
+  email: string,
+  passwordHash: string,
+): Promise<{ academyId: number; userId: number }> {
+  return db.transaction(async (tx) => {
     const now = Date.now();
-    const academyId = Number(insertAcademyStmt.run(academiaNome, now).lastInsertRowid);
-    const userId = Number(
-      insertUserStmt.run(academyId, nome, email, passwordHash, now).lastInsertRowid,
+    const academia = await tx.one<{ id: number }>(INSERIR_ACADEMIA, academiaNome, now);
+    const academyId = academia!.id;
+    const usuario = await tx.one<{ id: number }>(
+      INSERIR_USUARIO,
+      academyId,
+      nome,
+      email,
+      passwordHash,
+      now,
     );
-    return { academyId, userId };
-  },
-);
+    return { academyId, userId: usuario!.id };
+  });
+}
 
+/** 23505 = unique_violation no Postgres. */
 function isUniqueViolation(err: unknown): boolean {
   return (
-    err instanceof Error &&
-    'code' in err &&
-    typeof err.code === 'string' &&
-    err.code.startsWith('SQLITE_CONSTRAINT')
+    err instanceof Error && 'code' in err && (err as { code?: string }).code === '23505'
   );
 }
 
-function issueSession(res: Response, userId: number): void {
-  const token = createSession(userId);
+async function issueSession(res: Response, userId: number): Promise<void> {
+  const token = await createSession(userId);
   res.cookie(SESSION_COOKIE, token, sessionCookieOptions);
 }
 
@@ -103,7 +117,7 @@ const registerLimit = createRateLimit(5, 60 * MINUTE);
 const clientKey = (req: { ip?: string }): string => req.ip ?? 'desconhecido';
 
 export function registerAuthRoutes(api: Router): void {
-  api.post('/auth/register', (req, res) => {
+  api.post('/auth/register', asyncHandler(async (req, res) => {
     if (!registerLimit.attempt(clientKey(req))) {
       res.status(429).json({ error: 'Muitas contas criadas. Tente novamente mais tarde.' });
       return;
@@ -115,14 +129,14 @@ export function registerAuthRoutes(api: Router): void {
     }
     const { nome, academiaNome, email, senha } = parsed.data;
 
-    if (findUserByEmailStmt.get(email)) {
+    if (await db.one(BUSCAR_POR_EMAIL, email)) {
       res.status(409).json({ error: 'Este e-mail já está cadastrado' });
       return;
     }
 
     let ids: { academyId: number; userId: number };
     try {
-      ids = createAccountTx(nome, academiaNome, email, hashPassword(senha));
+      ids = await createAccount(nome, academiaNome, email, hashPassword(senha));
     } catch (err) {
       if (isUniqueViolation(err)) {
         res.status(409).json({ error: 'Este e-mail já está cadastrado' });
@@ -131,7 +145,7 @@ export function registerAuthRoutes(api: Router): void {
       throw err;
     }
 
-    issueSession(res, ids.userId);
+    await issueSession(res, ids.userId);
     const body: AuthResponse = {
       user: {
         id: ids.userId,
@@ -142,9 +156,9 @@ export function registerAuthRoutes(api: Router): void {
       },
     };
     res.json(body);
-  });
+  }));
 
-  api.post('/auth/login', (req, res) => {
+  api.post('/auth/login', asyncHandler(async (req, res) => {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({ error: parsed.error.issues[0]?.message ?? 'Dados inválidos' });
@@ -160,14 +174,14 @@ export function registerAuthRoutes(api: Router): void {
       return;
     }
 
-    const user = findUserByEmailStmt.get(email) as UserRow | undefined;
+    const user = await db.one<UserRow>(BUSCAR_POR_EMAIL, email);
     if (!user || !verifyPassword(senha, user.password_hash)) {
       res.status(401).json({ error: 'E-mail ou senha incorretos' });
       return;
     }
 
     loginLimit.clear(key);
-    issueSession(res, user.id);
+    await issueSession(res, user.id);
     const body: AuthResponse = {
       user: {
         id: user.id,
@@ -178,23 +192,23 @@ export function registerAuthRoutes(api: Router): void {
       },
     };
     res.json(body);
-  });
+  }));
 
-  api.post('/auth/logout', (req, res) => {
+  api.post('/auth/logout', asyncHandler(async (req, res) => {
     const token = tokenFromCookies(req.cookies);
-    if (token) deleteSession(token);
+    if (token) await deleteSession(token);
     res.clearCookie(SESSION_COOKIE, { httpOnly: true, sameSite: 'lax', path: '/' });
     res.json({ ok: true });
-  });
+  }));
 
-  api.get('/auth/me', (req, res) => {
+  api.get('/auth/me', asyncHandler(async (req, res) => {
     const token = tokenFromCookies(req.cookies);
-    const user = token ? resolveSession(token) : null;
+    const user = token ? await resolveSession(token) : null;
     if (!user) {
       res.status(401).json({ error: 'Não autenticado' });
       return;
     }
     const body: AuthResponse = { user };
     res.json(body);
-  });
+  }));
 }

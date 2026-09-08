@@ -1,0 +1,56 @@
+{
+ "defaults": {
+  "academiaNome": "Academia Movimento",
+  "frequencyDropHigh": 0.5,
+  "frequencyDropMedium": 0.3,
+  "inactivityCritical": 30,
+  "inactivityHigh": 10,
+  "inactivityMedium": 7
+ },
+ "plans": [
+  {
+   "alunos": 82,
+   "duracaoMeses": 1,
+   "id": 25,
+   "nome": "Estudante",
+   "valorCentavos": 7990
+  },
+  {
+   "alunos": 352,
+   "duracaoMeses": 1,
+   "id": 21,
+   "nome": "Mensal",
+   "valorCentavos": 12990
+  },
+  {
+   "alunos": 147,
+   "duracaoMeses": 3,
+   "id": 22,
+   "nome": "Trimestral",
+   "valorCentavos": 11490
+  },
+  {
+   "alunos": 88,
+   "duracaoMeses": 6,
+   "id": 23,
+   "nome": "Semestral",
+   "valorCentavos": 9990
+  },
+  {
+   "alunos": 131,
+   "duracaoMeses": 12,
+   "id": 24,
+   "nome": "Anual",
+   "valorCentavos": 8490
+  }
+ ],
+ "promotions": [],
+ "settings": {
+  "academiaNome": "Academia Movimento",
+  "frequencyDropHigh": 0.5,
+  "frequencyDropMedium": 0.3,
+  "inactivityCritical": 30,
+  "inactivityHigh": 10,
+  "inactivityMedium": 7
+ }
+}

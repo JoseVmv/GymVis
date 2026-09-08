@@ -1,0 +1,2181 @@
+{
+ "frequencyDrop": {
+  "count": 105,
+  "students": [
+   {
+    "baselineWeekly": 2.429752066115703,
+    "daysSinceLastAccess": 56,
+    "id": 3795,
+    "mensalidadeCentavos": 8490,
+    "nome": "Bianca Santana Mendes",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.4499999999999997,
+    "daysSinceLastAccess": 53,
+    "id": 3417,
+    "mensalidadeCentavos": 12990,
+    "nome": "Daniela Melo",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.411111111111111,
+    "daysSinceLastAccess": 54,
+    "id": 3480,
+    "mensalidadeCentavos": 11490,
+    "nome": "Daniela Moura",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.333333333333333,
+    "daysSinceLastAccess": 48,
+    "id": 3713,
+    "mensalidadeCentavos": 8490,
+    "nome": "Douglas Martins Carvalho",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.488888888888889,
+    "daysSinceLastAccess": 38,
+    "id": 3413,
+    "mensalidadeCentavos": 11490,
+    "nome": "Eduardo Peixoto Araújo",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.9166666666666665,
+    "daysSinceLastAccess": 34,
+    "id": 3583,
+    "mensalidadeCentavos": 6290,
+    "nome": "Eduardo Rocha Farias",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.8277777777777777,
+    "daysSinceLastAccess": 46,
+    "id": 3574,
+    "mensalidadeCentavos": 8490,
+    "nome": "Elaine Araújo",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.6444444444444444,
+    "daysSinceLastAccess": 39,
+    "id": 3558,
+    "mensalidadeCentavos": 12990,
+    "nome": "Elaine Garcia Rocha",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5666666666666664,
+    "daysSinceLastAccess": 32,
+    "id": 3473,
+    "mensalidadeCentavos": 12990,
+    "nome": "Emerson Aguiar",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.613924050632911,
+    "daysSinceLastAccess": 43,
+    "id": 3768,
+    "mensalidadeCentavos": 11490,
+    "nome": "Emerson Barbosa Prado",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 4.238888888888889,
+    "daysSinceLastAccess": 40,
+    "id": 3648,
+    "mensalidadeCentavos": 11490,
+    "nome": "Emerson Santana",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.333333333333333,
+    "daysSinceLastAccess": 45,
+    "id": 3719,
+    "mensalidadeCentavos": 12990,
+    "nome": "Fernanda Pereira",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.683333333333333,
+    "daysSinceLastAccess": 38,
+    "id": 3604,
+    "mensalidadeCentavos": 7990,
+    "nome": "Flávia Oliveira Soares",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.6444444444444444,
+    "daysSinceLastAccess": 39,
+    "id": 3589,
+    "mensalidadeCentavos": 7490,
+    "nome": "Helena Amaral",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.9444444444444444,
+    "daysSinceLastAccess": 41,
+    "id": 3591,
+    "mensalidadeCentavos": 9990,
+    "nome": "Hugo Silva",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.9901960784313726,
+    "daysSinceLastAccess": 35,
+    "id": 3831,
+    "mensalidadeCentavos": 7790,
+    "nome": "Igor Sales",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.043795620437956,
+    "daysSinceLastAccess": 40,
+    "id": 3770,
+    "mensalidadeCentavos": 8490,
+    "nome": "Ingrid Barros",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.2555555555555555,
+    "daysSinceLastAccess": 61,
+    "id": 3597,
+    "mensalidadeCentavos": 10890,
+    "nome": "Juliana Neves",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.0348837209302326,
+    "daysSinceLastAccess": 61,
+    "id": 3822,
+    "mensalidadeCentavos": 12990,
+    "nome": "Jéssica Tavares",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.8148148148148149,
+    "daysSinceLastAccess": 33,
+    "id": 3884,
+    "mensalidadeCentavos": 12990,
+    "nome": "Luana Pereira Costa",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.6415094339622645,
+    "daysSinceLastAccess": 29,
+    "id": 3878,
+    "mensalidadeCentavos": 7990,
+    "nome": "Murilo Araújo Farias",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.9444444444444444,
+    "daysSinceLastAccess": 38,
+    "id": 3371,
+    "mensalidadeCentavos": 12990,
+    "nome": "Murilo Batista",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 3.71875,
+    "daysSinceLastAccess": 48,
+    "id": 3870,
+    "mensalidadeCentavos": 11490,
+    "nome": "Mônica Teixeira Leal",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 3.8387096774193545,
+    "daysSinceLastAccess": 28,
+    "id": 3904,
+    "mensalidadeCentavos": 12990,
+    "nome": "Paulo Nascimento",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.7625899280575539,
+    "daysSinceLastAccess": 53,
+    "id": 3767,
+    "mensalidadeCentavos": 12990,
+    "nome": "Renata Miranda",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.9055555555555554,
+    "daysSinceLastAccess": 46,
+    "id": 3285,
+    "mensalidadeCentavos": 8490,
+    "nome": "Renata Moura",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5666666666666664,
+    "daysSinceLastAccess": 45,
+    "id": 3420,
+    "mensalidadeCentavos": 9890,
+    "nome": "Rodrigo Garcia",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.683333333333333,
+    "daysSinceLastAccess": 43,
+    "id": 3590,
+    "mensalidadeCentavos": 11490,
+    "nome": "Simone Franco Batista",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.5625,
+    "daysSinceLastAccess": 37,
+    "id": 3786,
+    "mensalidadeCentavos": 12990,
+    "nome": "Tatiane Brandão",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.2555555555555555,
+    "daysSinceLastAccess": 53,
+    "id": 3481,
+    "mensalidadeCentavos": 11490,
+    "nome": "Thiago Cardoso",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 3.6166666666666667,
+    "daysSinceLastAccess": 40,
+    "id": 3334,
+    "mensalidadeCentavos": 9990,
+    "nome": "Thiago Neves",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5277777777777777,
+    "daysSinceLastAccess": 40,
+    "id": 3517,
+    "mensalidadeCentavos": 12990,
+    "nome": "Vanessa Mendes",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5666666666666664,
+    "daysSinceLastAccess": 48,
+    "id": 3315,
+    "mensalidadeCentavos": 12990,
+    "nome": "Viviane Cardoso Xavier",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5277777777777777,
+    "daysSinceLastAccess": 46,
+    "id": 3535,
+    "mensalidadeCentavos": 8490,
+    "nome": "Viviane Fernandes",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.5611510791366907,
+    "daysSinceLastAccess": 37,
+    "id": 3776,
+    "mensalidadeCentavos": 7990,
+    "nome": "Viviane Oliveira Azevedo",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2,
+    "daysSinceLastAccess": 47,
+    "id": 3892,
+    "mensalidadeCentavos": 11490,
+    "nome": "Wesley Ferreira",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 3.2535211267605635,
+    "daysSinceLastAccess": 23,
+    "id": 3872,
+    "mensalidadeCentavos": 11490,
+    "nome": "Matheus Almeida",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9231601731601732
+   },
+   {
+    "baselineWeekly": 3.135416666666667,
+    "daysSinceLastAccess": 28,
+    "id": 3818,
+    "mensalidadeCentavos": 12990,
+    "nome": "Mônica Nunes",
+    "recentWeekly": 0.25,
+    "status": "inadimplente",
+    "variation": -0.920265780730897
+   },
+   {
+    "baselineWeekly": 2.8777777777777778,
+    "daysSinceLastAccess": 27,
+    "id": 3388,
+    "mensalidadeCentavos": 12990,
+    "nome": "Samuel Cunha Machado",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9131274131274131
+   },
+   {
+    "baselineWeekly": 2.8388888888888886,
+    "daysSinceLastAccess": 24,
+    "id": 3661,
+    "mensalidadeCentavos": 7990,
+    "nome": "Rafael Santos",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9119373776908023
+   },
+   {
+    "baselineWeekly": 2.8,
+    "daysSinceLastAccess": 28,
+    "id": 3520,
+    "mensalidadeCentavos": 12990,
+    "nome": "Bruno Oliveira Peixoto",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9107142857142857
+   },
+   {
+    "baselineWeekly": 2.7222222222222223,
+    "daysSinceLastAccess": 26,
+    "id": 3447,
+    "mensalidadeCentavos": 12990,
+    "nome": "Letícia Machado",
+    "recentWeekly": 0.25,
+    "status": "inadimplente",
+    "variation": -0.9081632653061225
+   },
+   {
+    "baselineWeekly": 2.7222222222222223,
+    "daysSinceLastAccess": 28,
+    "id": 3475,
+    "mensalidadeCentavos": 7990,
+    "nome": "Vinícius Rocha",
+    "recentWeekly": 0.25,
+    "status": "inadimplente",
+    "variation": -0.9081632653061225
+   },
+   {
+    "baselineWeekly": 2.569620253164557,
+    "daysSinceLastAccess": 10,
+    "id": 3813,
+    "mensalidadeCentavos": 11490,
+    "nome": "José Cavalcanti",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9027093596059114
+   },
+   {
+    "baselineWeekly": 2.0914634146341466,
+    "daysSinceLastAccess": 22,
+    "id": 3718,
+    "mensalidadeCentavos": 12990,
+    "nome": "Pedro Ribeiro Tavares",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.880466472303207
+   },
+   {
+    "baselineWeekly": 2.9166666666666665,
+    "daysSinceLastAccess": 22,
+    "id": 3643,
+    "mensalidadeCentavos": 11490,
+    "nome": "Anderson Machado Martins",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.8285714285714285
+   },
+   {
+    "baselineWeekly": 2.7222222222222223,
+    "daysSinceLastAccess": 24,
+    "id": 3546,
+    "mensalidadeCentavos": 8490,
+    "nome": "Eduarda Macedo",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.8163265306122449
+   },
+   {
+    "baselineWeekly": 2.683333333333333,
+    "daysSinceLastAccess": 18,
+    "id": 3561,
+    "mensalidadeCentavos": 12990,
+    "nome": "Renan Ramos",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.8136645962732919
+   },
+   {
+    "baselineWeekly": 2.52,
+    "daysSinceLastAccess": 26,
+    "id": 3883,
+    "mensalidadeCentavos": 12990,
+    "nome": "Tatiane Machado",
+    "recentWeekly": 0.5,
+    "status": "inadimplente",
+    "variation": -0.8015873015873016
+   },
+   {
+    "baselineWeekly": 3.192982456140351,
+    "daysSinceLastAccess": 15,
+    "id": 3798,
+    "mensalidadeCentavos": 10990,
+    "nome": "Caio Antunes",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.7651098901098902
+   },
+   {
+    "baselineWeekly": 2.022222222222222,
+    "daysSinceLastAccess": 24,
+    "id": 3502,
+    "mensalidadeCentavos": 9990,
+    "nome": "Anderson Souza",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.7527472527472527
+   },
+   {
+    "baselineWeekly": 2.8777777777777778,
+    "daysSinceLastAccess": 13,
+    "id": 3386,
+    "mensalidadeCentavos": 12990,
+    "nome": "Vinícius Ramos",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.7393822393822393
+   },
+   {
+    "baselineWeekly": 2.8538461538461535,
+    "daysSinceLastAccess": 17,
+    "id": 3803,
+    "mensalidadeCentavos": 8490,
+    "nome": "Sabrina Cardoso Gomes",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.7371967654986522
+   },
+   {
+    "baselineWeekly": 2.683333333333333,
+    "daysSinceLastAccess": 19,
+    "id": 3404,
+    "mensalidadeCentavos": 7490,
+    "nome": "Bernardo Cardoso",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.7204968944099379
+   },
+   {
+    "baselineWeekly": 3.5,
+    "daysSinceLastAccess": 22,
+    "id": 3534,
+    "mensalidadeCentavos": 11490,
+    "nome": "Jéssica Brandão Souza",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.7142857142857143
+   },
+   {
+    "baselineWeekly": 4.097560975609756,
+    "daysSinceLastAccess": 15,
+    "id": 3902,
+    "mensalidadeCentavos": 8490,
+    "nome": "Eduarda Ferreira",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.6949404761904762
+   },
+   {
+    "baselineWeekly": 3.694444444444444,
+    "daysSinceLastAccess": 21,
+    "id": 3493,
+    "mensalidadeCentavos": 12990,
+    "nome": "Lucas Nunes",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.6616541353383458
+   },
+   {
+    "baselineWeekly": 2.9166666666666665,
+    "daysSinceLastAccess": 12,
+    "id": 3750,
+    "mensalidadeCentavos": 12990,
+    "nome": "Guilherme Alves",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.6571428571428571
+   },
+   {
+    "baselineWeekly": 3.843137254901961,
+    "daysSinceLastAccess": 12,
+    "id": 3876,
+    "mensalidadeCentavos": 11490,
+    "nome": "Carlos Queiroz",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.6096938775510204
+   },
+   {
+    "baselineWeekly": 1.7888888888888888,
+    "daysSinceLastAccess": 22,
+    "id": 3522,
+    "mensalidadeCentavos": 11490,
+    "nome": "Hugo Vieira",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.5807453416149068
+   },
+   {
+    "baselineWeekly": 1.1277777777777778,
+    "daysSinceLastAccess": 20,
+    "id": 3532,
+    "mensalidadeCentavos": 11490,
+    "nome": "Flávia Tavares",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.5566502463054187
+   },
+   {
+    "baselineWeekly": 1.0888888888888888,
+    "daysSinceLastAccess": 6,
+    "id": 3702,
+    "mensalidadeCentavos": 11490,
+    "nome": "Beatriz Pinto",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.5408163265306122
+   },
+   {
+    "baselineWeekly": 3.255813953488372,
+    "daysSinceLastAccess": 7,
+    "id": 3842,
+    "mensalidadeCentavos": 12990,
+    "nome": "Wesley Batista Andrade",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.5392857142857143
+   },
+   {
+    "baselineWeekly": 3.2463768115942027,
+    "daysSinceLastAccess": 18,
+    "id": 3754,
+    "mensalidadeCentavos": 9990,
+    "nome": "Beatriz Rocha",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.5379464285714285
+   },
+   {
+    "baselineWeekly": 3.7413793103448274,
+    "daysSinceLastAccess": 6,
+    "id": 3856,
+    "mensalidadeCentavos": 11490,
+    "nome": "Matheus Prado",
+    "recentWeekly": 1.75,
+    "status": "ativo",
+    "variation": -0.532258064516129
+   },
+   {
+    "baselineWeekly": 3.161290322580645,
+    "daysSinceLastAccess": 1,
+    "id": 3833,
+    "mensalidadeCentavos": 11690,
+    "nome": "Jéssica Alves Silva",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.5255102040816326
+   },
+   {
+    "baselineWeekly": 1.05,
+    "daysSinceLastAccess": 11,
+    "id": 3290,
+    "mensalidadeCentavos": 12990,
+    "nome": "Carolina Moreira Camargo",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.5238095238095238
+   },
+   {
+    "baselineWeekly": 2.5666666666666664,
+    "daysSinceLastAccess": 17,
+    "id": 3207,
+    "mensalidadeCentavos": 12990,
+    "nome": "Daniel Prado",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.512987012987013
+   },
+   {
+    "baselineWeekly": 4.044444444444444,
+    "daysSinceLastAccess": 15,
+    "id": 3636,
+    "mensalidadeCentavos": 9890,
+    "nome": "Camila Pinto",
+    "recentWeekly": 2,
+    "status": "ativo",
+    "variation": -0.5054945054945055
+   },
+   {
+    "baselineWeekly": 2.022222222222222,
+    "daysSinceLastAccess": 19,
+    "id": 3351,
+    "mensalidadeCentavos": 12990,
+    "nome": "Matheus Duarte",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.5054945054945055
+   },
+   {
+    "baselineWeekly": 1.9833333333333332,
+    "daysSinceLastAccess": 4,
+    "id": 3364,
+    "mensalidadeCentavos": 12990,
+    "nome": "Aline Peixoto",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.49579831932773105
+   },
+   {
+    "baselineWeekly": 2.9166666666666665,
+    "daysSinceLastAccess": 18,
+    "id": 3621,
+    "mensalidadeCentavos": 12990,
+    "nome": "André Queiroz",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.4857142857142857
+   },
+   {
+    "baselineWeekly": 2.9166666666666665,
+    "daysSinceLastAccess": 4,
+    "id": 3374,
+    "mensalidadeCentavos": 9990,
+    "nome": "Flávia Costa Melo",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.4857142857142857
+   },
+   {
+    "baselineWeekly": 2.823529411764706,
+    "daysSinceLastAccess": 19,
+    "id": 3790,
+    "mensalidadeCentavos": 12990,
+    "nome": "Aline Pacheco Lopes",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.46875000000000006
+   },
+   {
+    "baselineWeekly": 4.2,
+    "daysSinceLastAccess": 1,
+    "id": 3456,
+    "mensalidadeCentavos": 8490,
+    "nome": "Paulo Aguiar",
+    "recentWeekly": 2.25,
+    "status": "ativo",
+    "variation": -0.4642857142857143
+   },
+   {
+    "baselineWeekly": 3.6521739130434785,
+    "daysSinceLastAccess": 1,
+    "id": 3875,
+    "mensalidadeCentavos": 8490,
+    "nome": "Daniel Domingues Carvalho",
+    "recentWeekly": 2,
+    "status": "ativo",
+    "variation": -0.45238095238095244
+   },
+   {
+    "baselineWeekly": 4.496688741721854,
+    "daysSinceLastAccess": 17,
+    "id": 3749,
+    "mensalidadeCentavos": 12990,
+    "nome": "Gustavo Rodrigues Ramos",
+    "recentWeekly": 2.5,
+    "status": "ativo",
+    "variation": -0.4440353460972018
+   },
+   {
+    "baselineWeekly": 1.798165137614679,
+    "daysSinceLastAccess": 15,
+    "id": 3782,
+    "mensalidadeCentavos": 7990,
+    "nome": "Renata Lopes",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.4438775510204082
+   },
+   {
+    "baselineWeekly": 3.111111111111111,
+    "daysSinceLastAccess": 3,
+    "id": 3662,
+    "mensalidadeCentavos": 12990,
+    "nome": "Otávio Neves",
+    "recentWeekly": 1.75,
+    "status": "ativo",
+    "variation": -0.4375
+   },
+   {
+    "baselineWeekly": 5.270588235294118,
+    "daysSinceLastAccess": 2,
+    "id": 3847,
+    "mensalidadeCentavos": 8490,
+    "nome": "Murilo Leal Antunes",
+    "recentWeekly": 3,
+    "status": "ativo",
+    "variation": -0.4308035714285714
+   },
+   {
+    "baselineWeekly": 3.8181818181818183,
+    "daysSinceLastAccess": 5,
+    "id": 3873,
+    "mensalidadeCentavos": 11490,
+    "nome": "Larissa Brandão Souza",
+    "recentWeekly": 2.25,
+    "status": "ativo",
+    "variation": -0.41071428571428575
+   },
+   {
+    "baselineWeekly": 2.9647058823529413,
+    "daysSinceLastAccess": 5,
+    "id": 3830,
+    "mensalidadeCentavos": 11490,
+    "nome": "Anderson Prado Borges",
+    "recentWeekly": 1.75,
+    "status": "ativo",
+    "variation": -0.40972222222222227
+   },
+   {
+    "baselineWeekly": 2.022222222222222,
+    "daysSinceLastAccess": 7,
+    "id": 3210,
+    "mensalidadeCentavos": 12990,
+    "nome": "Sérgio Moura",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.38186813186813184
+   },
+   {
+    "baselineWeekly": 1.2105263157894737,
+    "daysSinceLastAccess": 7,
+    "id": 3771,
+    "mensalidadeCentavos": 8490,
+    "nome": "Diego Marques Machado",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.3804347826086956
+   },
+   {
+    "baselineWeekly": 3.2162162162162162,
+    "daysSinceLastAccess": 2,
+    "id": 3912,
+    "mensalidadeCentavos": 12990,
+    "nome": "Giovana Camargo",
+    "recentWeekly": 2,
+    "status": "ativo",
+    "variation": -0.37815126050420167
+   },
+   {
+    "baselineWeekly": 1.5944444444444443,
+    "daysSinceLastAccess": 3,
+    "id": 3666,
+    "mensalidadeCentavos": 10990,
+    "nome": "João Cardoso",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.3728222996515679
+   },
+   {
+    "baselineWeekly": 3.1888888888888887,
+    "daysSinceLastAccess": 4,
+    "id": 3324,
+    "mensalidadeCentavos": 10390,
+    "nome": "Renan Soares",
+    "recentWeekly": 2,
+    "status": "ativo",
+    "variation": -0.3728222996515679
+   },
+   {
+    "baselineWeekly": 1.9833333333333332,
+    "daysSinceLastAccess": 14,
+    "id": 3381,
+    "mensalidadeCentavos": 12990,
+    "nome": "Talita Peixoto",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.36974789915966383
+   },
+   {
+    "baselineWeekly": 2.7450980392156863,
+    "daysSinceLastAccess": 1,
+    "id": 3863,
+    "mensalidadeCentavos": 8490,
+    "nome": "Ana Azevedo",
+    "recentWeekly": 1.75,
+    "status": "ativo",
+    "variation": -0.3625
+   },
+   {
+    "baselineWeekly": 1.9055555555555554,
+    "daysSinceLastAccess": 4,
+    "id": 3214,
+    "mensalidadeCentavos": 9990,
+    "nome": "Ana Teixeira",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.3440233236151603
+   },
+   {
+    "baselineWeekly": 1.9055555555555554,
+    "daysSinceLastAccess": 6,
+    "id": 3294,
+    "mensalidadeCentavos": 11490,
+    "nome": "Nicolas Garcia",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.3440233236151603
+   },
+   {
+    "baselineWeekly": 1.1428571428571428,
+    "daysSinceLastAccess": 4,
+    "id": 3832,
+    "mensalidadeCentavos": 10990,
+    "nome": "Priscila Carvalho Campos",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.34374999999999994
+   },
+   {
+    "baselineWeekly": 1.1277777777777778,
+    "daysSinceLastAccess": 5,
+    "id": 3341,
+    "mensalidadeCentavos": 8490,
+    "nome": "Carlos Ferreira Queiroz",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.33497536945812806
+   },
+   {
+    "baselineWeekly": 1.5,
+    "daysSinceLastAccess": 16,
+    "id": 3886,
+    "mensalidadeCentavos": 7990,
+    "nome": "Beatriz Peixoto Cunha",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.3333333333333333
+   },
+   {
+    "baselineWeekly": 1.8666666666666667,
+    "daysSinceLastAccess": 5,
+    "id": 3600,
+    "mensalidadeCentavos": 12990,
+    "nome": "Marcelo Monteiro Freitas",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.33035714285714285
+   },
+   {
+    "baselineWeekly": 4.472222222222222,
+    "daysSinceLastAccess": 11,
+    "id": 3838,
+    "mensalidadeCentavos": 8490,
+    "nome": "Eduardo Freitas",
+    "recentWeekly": 3,
+    "status": "ativo",
+    "variation": -0.32919254658385094
+   },
+   {
+    "baselineWeekly": 3.3496932515337425,
+    "daysSinceLastAccess": 1,
+    "id": 3762,
+    "mensalidadeCentavos": 9990,
+    "nome": "Renan Carvalho",
+    "recentWeekly": 2.25,
+    "status": "ativo",
+    "variation": -0.32829670329670335
+   },
+   {
+    "baselineWeekly": 2.6,
+    "daysSinceLastAccess": 1,
+    "id": 3885,
+    "mensalidadeCentavos": 9990,
+    "nome": "Ana Freitas",
+    "recentWeekly": 1.75,
+    "status": "ativo",
+    "variation": -0.3269230769230769
+   },
+   {
+    "baselineWeekly": 1.4777777777777776,
+    "daysSinceLastAccess": 2,
+    "id": 3649,
+    "mensalidadeCentavos": 10090,
+    "nome": "Giovana Neves",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.32330827067669166
+   },
+   {
+    "baselineWeekly": 3.6842105263157894,
+    "daysSinceLastAccess": 10,
+    "id": 3895,
+    "mensalidadeCentavos": 9990,
+    "nome": "Aline Aguiar",
+    "recentWeekly": 2.5,
+    "status": "ativo",
+    "variation": -0.3214285714285714
+   }
+  ]
+ },
+ "inactive14": {
+  "count": 42,
+  "students": [
+   {
+    "baselineWeekly": 0.9722222222222222,
+    "daysSinceLastAccess": 29,
+    "id": 3363,
+    "mensalidadeCentavos": 7990,
+    "nome": "Caio Falcão Oliveira",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.6415094339622645,
+    "daysSinceLastAccess": 29,
+    "id": 3878,
+    "mensalidadeCentavos": 7990,
+    "nome": "Murilo Araújo Farias",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.8,
+    "daysSinceLastAccess": 28,
+    "id": 3520,
+    "mensalidadeCentavos": 12990,
+    "nome": "Bruno Oliveira Peixoto",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9107142857142857
+   },
+   {
+    "baselineWeekly": 3.135416666666667,
+    "daysSinceLastAccess": 28,
+    "id": 3818,
+    "mensalidadeCentavos": 12990,
+    "nome": "Mônica Nunes",
+    "recentWeekly": 0.25,
+    "status": "inadimplente",
+    "variation": -0.920265780730897
+   },
+   {
+    "baselineWeekly": 3.8387096774193545,
+    "daysSinceLastAccess": 28,
+    "id": 3904,
+    "mensalidadeCentavos": 12990,
+    "nome": "Paulo Nascimento",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.7222222222222223,
+    "daysSinceLastAccess": 28,
+    "id": 3475,
+    "mensalidadeCentavos": 7990,
+    "nome": "Vinícius Rocha",
+    "recentWeekly": 0.25,
+    "status": "inadimplente",
+    "variation": -0.9081632653061225
+   },
+   {
+    "baselineWeekly": 2.8777777777777778,
+    "daysSinceLastAccess": 27,
+    "id": 3388,
+    "mensalidadeCentavos": 12990,
+    "nome": "Samuel Cunha Machado",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9131274131274131
+   },
+   {
+    "baselineWeekly": 2.7222222222222223,
+    "daysSinceLastAccess": 26,
+    "id": 3447,
+    "mensalidadeCentavos": 12990,
+    "nome": "Letícia Machado",
+    "recentWeekly": 0.25,
+    "status": "inadimplente",
+    "variation": -0.9081632653061225
+   },
+   {
+    "baselineWeekly": 2.52,
+    "daysSinceLastAccess": 26,
+    "id": 3883,
+    "mensalidadeCentavos": 12990,
+    "nome": "Tatiane Machado",
+    "recentWeekly": 0.5,
+    "status": "inadimplente",
+    "variation": -0.8015873015873016
+   },
+   {
+    "baselineWeekly": 2.022222222222222,
+    "daysSinceLastAccess": 24,
+    "id": 3502,
+    "mensalidadeCentavos": 9990,
+    "nome": "Anderson Souza",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.7527472527472527
+   },
+   {
+    "baselineWeekly": 2.7222222222222223,
+    "daysSinceLastAccess": 24,
+    "id": 3546,
+    "mensalidadeCentavos": 8490,
+    "nome": "Eduarda Macedo",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.8163265306122449
+   },
+   {
+    "baselineWeekly": 2.8388888888888886,
+    "daysSinceLastAccess": 24,
+    "id": 3661,
+    "mensalidadeCentavos": 7990,
+    "nome": "Rafael Santos",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9119373776908023
+   },
+   {
+    "baselineWeekly": 3.2535211267605635,
+    "daysSinceLastAccess": 23,
+    "id": 3872,
+    "mensalidadeCentavos": 11490,
+    "nome": "Matheus Almeida",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9231601731601732
+   },
+   {
+    "baselineWeekly": 2.9166666666666665,
+    "daysSinceLastAccess": 22,
+    "id": 3643,
+    "mensalidadeCentavos": 11490,
+    "nome": "Anderson Machado Martins",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.8285714285714285
+   },
+   {
+    "baselineWeekly": 1.7888888888888888,
+    "daysSinceLastAccess": 22,
+    "id": 3522,
+    "mensalidadeCentavos": 11490,
+    "nome": "Hugo Vieira",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.5807453416149068
+   },
+   {
+    "baselineWeekly": 3.5,
+    "daysSinceLastAccess": 22,
+    "id": 3534,
+    "mensalidadeCentavos": 11490,
+    "nome": "Jéssica Brandão Souza",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.7142857142857143
+   },
+   {
+    "baselineWeekly": 2.0914634146341466,
+    "daysSinceLastAccess": 22,
+    "id": 3718,
+    "mensalidadeCentavos": 12990,
+    "nome": "Pedro Ribeiro Tavares",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.880466472303207
+   },
+   {
+    "baselineWeekly": 3.694444444444444,
+    "daysSinceLastAccess": 21,
+    "id": 3493,
+    "mensalidadeCentavos": 12990,
+    "nome": "Lucas Nunes",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.6616541353383458
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 21,
+    "id": 3959,
+    "mensalidadeCentavos": 12990,
+    "nome": "Yasmin Melo",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": 1.1277777777777778,
+    "daysSinceLastAccess": 20,
+    "id": 3532,
+    "mensalidadeCentavos": 11490,
+    "nome": "Flávia Tavares",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.5566502463054187
+   },
+   {
+    "baselineWeekly": 0.9722222222222222,
+    "daysSinceLastAccess": 20,
+    "id": 3382,
+    "mensalidadeCentavos": 7090,
+    "nome": "Marcelo Sales",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.4857142857142857
+   },
+   {
+    "baselineWeekly": 2.823529411764706,
+    "daysSinceLastAccess": 19,
+    "id": 3790,
+    "mensalidadeCentavos": 12990,
+    "nome": "Aline Pacheco Lopes",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.46875000000000006
+   },
+   {
+    "baselineWeekly": 2.683333333333333,
+    "daysSinceLastAccess": 19,
+    "id": 3404,
+    "mensalidadeCentavos": 7490,
+    "nome": "Bernardo Cardoso",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.7204968944099379
+   },
+   {
+    "baselineWeekly": 0.8944444444444444,
+    "daysSinceLastAccess": 19,
+    "id": 3622,
+    "mensalidadeCentavos": 11490,
+    "nome": "Carolina Santana",
+    "recentWeekly": 0.5,
+    "status": "inadimplente",
+    "variation": -0.4409937888198757
+   },
+   {
+    "baselineWeekly": 2.022222222222222,
+    "daysSinceLastAccess": 19,
+    "id": 3351,
+    "mensalidadeCentavos": 12990,
+    "nome": "Matheus Duarte",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.5054945054945055
+   },
+   {
+    "baselineWeekly": 2.9166666666666665,
+    "daysSinceLastAccess": 18,
+    "id": 3621,
+    "mensalidadeCentavos": 12990,
+    "nome": "André Queiroz",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.4857142857142857
+   },
+   {
+    "baselineWeekly": 3.2463768115942027,
+    "daysSinceLastAccess": 18,
+    "id": 3754,
+    "mensalidadeCentavos": 9990,
+    "nome": "Beatriz Rocha",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.5379464285714285
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 18,
+    "id": 3923,
+    "mensalidadeCentavos": 9690,
+    "nome": "Fábio Andrade",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 18,
+    "id": 3942,
+    "mensalidadeCentavos": 8490,
+    "nome": "Renan Garcia Costa",
+    "recentWeekly": 0.5,
+    "status": "inadimplente",
+    "variation": null
+   },
+   {
+    "baselineWeekly": 2.683333333333333,
+    "daysSinceLastAccess": 18,
+    "id": 3561,
+    "mensalidadeCentavos": 12990,
+    "nome": "Renan Ramos",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.8136645962732919
+   },
+   {
+    "baselineWeekly": 2.5666666666666664,
+    "daysSinceLastAccess": 17,
+    "id": 3207,
+    "mensalidadeCentavos": 12990,
+    "nome": "Daniel Prado",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.512987012987013
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 17,
+    "id": 3899,
+    "mensalidadeCentavos": 7990,
+    "nome": "Elaine Santos",
+    "recentWeekly": 1.75,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 17,
+    "id": 3950,
+    "mensalidadeCentavos": 9990,
+    "nome": "Fábio Marques Vieira",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": 4.496688741721854,
+    "daysSinceLastAccess": 17,
+    "id": 3749,
+    "mensalidadeCentavos": 12990,
+    "nome": "Gustavo Rodrigues Ramos",
+    "recentWeekly": 2.5,
+    "status": "ativo",
+    "variation": -0.4440353460972018
+   },
+   {
+    "baselineWeekly": 2.8538461538461535,
+    "daysSinceLastAccess": 17,
+    "id": 3803,
+    "mensalidadeCentavos": 8490,
+    "nome": "Sabrina Cardoso Gomes",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.7371967654986522
+   },
+   {
+    "baselineWeekly": 1.5,
+    "daysSinceLastAccess": 16,
+    "id": 3886,
+    "mensalidadeCentavos": 7990,
+    "nome": "Beatriz Peixoto Cunha",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.3333333333333333
+   },
+   {
+    "baselineWeekly": 3.192982456140351,
+    "daysSinceLastAccess": 15,
+    "id": 3798,
+    "mensalidadeCentavos": 10990,
+    "nome": "Caio Antunes",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.7651098901098902
+   },
+   {
+    "baselineWeekly": 4.044444444444444,
+    "daysSinceLastAccess": 15,
+    "id": 3636,
+    "mensalidadeCentavos": 9890,
+    "nome": "Camila Pinto",
+    "recentWeekly": 2,
+    "status": "ativo",
+    "variation": -0.5054945054945055
+   },
+   {
+    "baselineWeekly": 4.097560975609756,
+    "daysSinceLastAccess": 15,
+    "id": 3902,
+    "mensalidadeCentavos": 8490,
+    "nome": "Eduarda Ferreira",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.6949404761904762
+   },
+   {
+    "baselineWeekly": 0.9333333333333333,
+    "daysSinceLastAccess": 15,
+    "id": 3647,
+    "mensalidadeCentavos": 11490,
+    "nome": "Henrique Machado",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.19642857142857145
+   },
+   {
+    "baselineWeekly": 1.798165137614679,
+    "daysSinceLastAccess": 15,
+    "id": 3782,
+    "mensalidadeCentavos": 7990,
+    "nome": "Renata Lopes",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.4438775510204082
+   },
+   {
+    "baselineWeekly": 1.9833333333333332,
+    "daysSinceLastAccess": 14,
+    "id": 3381,
+    "mensalidadeCentavos": 12990,
+    "nome": "Talita Peixoto",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.36974789915966383
+   }
+  ]
+ },
+ "inactive30": {
+  "count": 36,
+  "students": [
+   {
+    "baselineWeekly": 2.2555555555555555,
+    "daysSinceLastAccess": 61,
+    "id": 3597,
+    "mensalidadeCentavos": 10890,
+    "nome": "Juliana Neves",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.0348837209302326,
+    "daysSinceLastAccess": 61,
+    "id": 3822,
+    "mensalidadeCentavos": 12990,
+    "nome": "Jéssica Tavares",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.429752066115703,
+    "daysSinceLastAccess": 56,
+    "id": 3795,
+    "mensalidadeCentavos": 8490,
+    "nome": "Bianca Santana Mendes",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.411111111111111,
+    "daysSinceLastAccess": 54,
+    "id": 3480,
+    "mensalidadeCentavos": 11490,
+    "nome": "Daniela Moura",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.4499999999999997,
+    "daysSinceLastAccess": 53,
+    "id": 3417,
+    "mensalidadeCentavos": 12990,
+    "nome": "Daniela Melo",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.7625899280575539,
+    "daysSinceLastAccess": 53,
+    "id": 3767,
+    "mensalidadeCentavos": 12990,
+    "nome": "Renata Miranda",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.2555555555555555,
+    "daysSinceLastAccess": 53,
+    "id": 3481,
+    "mensalidadeCentavos": 11490,
+    "nome": "Thiago Cardoso",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.333333333333333,
+    "daysSinceLastAccess": 48,
+    "id": 3713,
+    "mensalidadeCentavos": 8490,
+    "nome": "Douglas Martins Carvalho",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 3.71875,
+    "daysSinceLastAccess": 48,
+    "id": 3870,
+    "mensalidadeCentavos": 11490,
+    "nome": "Mônica Teixeira Leal",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5666666666666664,
+    "daysSinceLastAccess": 48,
+    "id": 3315,
+    "mensalidadeCentavos": 12990,
+    "nome": "Viviane Cardoso Xavier",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2,
+    "daysSinceLastAccess": 47,
+    "id": 3892,
+    "mensalidadeCentavos": 11490,
+    "nome": "Wesley Ferreira",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.8277777777777777,
+    "daysSinceLastAccess": 46,
+    "id": 3574,
+    "mensalidadeCentavos": 8490,
+    "nome": "Elaine Araújo",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.9055555555555554,
+    "daysSinceLastAccess": 46,
+    "id": 3285,
+    "mensalidadeCentavos": 8490,
+    "nome": "Renata Moura",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5277777777777777,
+    "daysSinceLastAccess": 46,
+    "id": 3535,
+    "mensalidadeCentavos": 8490,
+    "nome": "Viviane Fernandes",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.333333333333333,
+    "daysSinceLastAccess": 45,
+    "id": 3719,
+    "mensalidadeCentavos": 12990,
+    "nome": "Fernanda Pereira",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5666666666666664,
+    "daysSinceLastAccess": 45,
+    "id": 3420,
+    "mensalidadeCentavos": 9890,
+    "nome": "Rodrigo Garcia",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.613924050632911,
+    "daysSinceLastAccess": 43,
+    "id": 3768,
+    "mensalidadeCentavos": 11490,
+    "nome": "Emerson Barbosa Prado",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.683333333333333,
+    "daysSinceLastAccess": 43,
+    "id": 3590,
+    "mensalidadeCentavos": 11490,
+    "nome": "Simone Franco Batista",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.9444444444444444,
+    "daysSinceLastAccess": 41,
+    "id": 3591,
+    "mensalidadeCentavos": 9990,
+    "nome": "Hugo Silva",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 4.238888888888889,
+    "daysSinceLastAccess": 40,
+    "id": 3648,
+    "mensalidadeCentavos": 11490,
+    "nome": "Emerson Santana",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.043795620437956,
+    "daysSinceLastAccess": 40,
+    "id": 3770,
+    "mensalidadeCentavos": 8490,
+    "nome": "Ingrid Barros",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 3.6166666666666667,
+    "daysSinceLastAccess": 40,
+    "id": 3334,
+    "mensalidadeCentavos": 9990,
+    "nome": "Thiago Neves",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5277777777777777,
+    "daysSinceLastAccess": 40,
+    "id": 3517,
+    "mensalidadeCentavos": 12990,
+    "nome": "Vanessa Mendes",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.6444444444444444,
+    "daysSinceLastAccess": 39,
+    "id": 3558,
+    "mensalidadeCentavos": 12990,
+    "nome": "Elaine Garcia Rocha",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.6444444444444444,
+    "daysSinceLastAccess": 39,
+    "id": 3589,
+    "mensalidadeCentavos": 7490,
+    "nome": "Helena Amaral",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.488888888888889,
+    "daysSinceLastAccess": 38,
+    "id": 3413,
+    "mensalidadeCentavos": 11490,
+    "nome": "Eduardo Peixoto Araújo",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.683333333333333,
+    "daysSinceLastAccess": 38,
+    "id": 3604,
+    "mensalidadeCentavos": 7990,
+    "nome": "Flávia Oliveira Soares",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.9444444444444444,
+    "daysSinceLastAccess": 38,
+    "id": 3371,
+    "mensalidadeCentavos": 12990,
+    "nome": "Murilo Batista",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.5625,
+    "daysSinceLastAccess": 37,
+    "id": 3786,
+    "mensalidadeCentavos": 12990,
+    "nome": "Tatiane Brandão",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.5611510791366907,
+    "daysSinceLastAccess": 37,
+    "id": 3776,
+    "mensalidadeCentavos": 7990,
+    "nome": "Viviane Oliveira Azevedo",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 1.9901960784313726,
+    "daysSinceLastAccess": 35,
+    "id": 3831,
+    "mensalidadeCentavos": 7790,
+    "nome": "Igor Sales",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": null,
+    "id": 3933,
+    "mensalidadeCentavos": 12990,
+    "nome": "Bruna Campos",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": null
+   },
+   {
+    "baselineWeekly": 2.9166666666666665,
+    "daysSinceLastAccess": 34,
+    "id": 3583,
+    "mensalidadeCentavos": 6290,
+    "nome": "Eduardo Rocha Farias",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 33,
+    "id": 3954,
+    "mensalidadeCentavos": 11490,
+    "nome": "Gustavo Rezende",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": 1.8148148148148149,
+    "daysSinceLastAccess": 33,
+    "id": 3884,
+    "mensalidadeCentavos": 12990,
+    "nome": "Luana Pereira Costa",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   },
+   {
+    "baselineWeekly": 2.5666666666666664,
+    "daysSinceLastAccess": 32,
+    "id": 3473,
+    "mensalidadeCentavos": 12990,
+    "nome": "Emerson Aguiar",
+    "recentWeekly": 0,
+    "status": "inadimplente",
+    "variation": -1
+   }
+  ]
+ },
+ "inactive7": {
+  "count": 37,
+  "students": [
+   {
+    "baselineWeekly": 2.1,
+    "daysSinceLastAccess": 13,
+    "id": 3280,
+    "mensalidadeCentavos": 12990,
+    "nome": "Leonardo Carvalho Queiroz",
+    "recentWeekly": 1.5,
+    "status": "inadimplente",
+    "variation": -0.28571428571428575
+   },
+   {
+    "baselineWeekly": 2.8777777777777778,
+    "daysSinceLastAccess": 13,
+    "id": 3386,
+    "mensalidadeCentavos": 12990,
+    "nome": "Vinícius Ramos",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.7393822393822393
+   },
+   {
+    "baselineWeekly": 3.843137254901961,
+    "daysSinceLastAccess": 12,
+    "id": 3876,
+    "mensalidadeCentavos": 11490,
+    "nome": "Carlos Queiroz",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.6096938775510204
+   },
+   {
+    "baselineWeekly": 2.9166666666666665,
+    "daysSinceLastAccess": 12,
+    "id": 3750,
+    "mensalidadeCentavos": 12990,
+    "nome": "Guilherme Alves",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.6571428571428571
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": null,
+    "id": 3936,
+    "mensalidadeCentavos": 12990,
+    "nome": "Luana Moura",
+    "recentWeekly": 0,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 12,
+    "id": 3963,
+    "mensalidadeCentavos": 10790,
+    "nome": "Michele Borges",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": 1.05,
+    "daysSinceLastAccess": 11,
+    "id": 3290,
+    "mensalidadeCentavos": 12990,
+    "nome": "Carolina Moreira Camargo",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.5238095238095238
+   },
+   {
+    "baselineWeekly": 4.472222222222222,
+    "daysSinceLastAccess": 11,
+    "id": 3838,
+    "mensalidadeCentavos": 8490,
+    "nome": "Eduardo Freitas",
+    "recentWeekly": 3,
+    "status": "ativo",
+    "variation": -0.32919254658385094
+   },
+   {
+    "baselineWeekly": 1.672222222222222,
+    "daysSinceLastAccess": 11,
+    "id": 3478,
+    "mensalidadeCentavos": 8490,
+    "nome": "Felipe Sales",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.2524916943521594
+   },
+   {
+    "baselineWeekly": 4.044444444444444,
+    "daysSinceLastAccess": 11,
+    "id": 3616,
+    "mensalidadeCentavos": 12990,
+    "nome": "Henrique Fernandes Macedo",
+    "recentWeekly": 2.75,
+    "status": "inadimplente",
+    "variation": -0.32005494505494503
+   },
+   {
+    "baselineWeekly": 3.5777777777777775,
+    "daysSinceLastAccess": 11,
+    "id": 3529,
+    "mensalidadeCentavos": 12990,
+    "nome": "Vinícius Soares",
+    "recentWeekly": 3,
+    "status": "ativo",
+    "variation": -0.1614906832298136
+   },
+   {
+    "baselineWeekly": 3.6842105263157894,
+    "daysSinceLastAccess": 10,
+    "id": 3895,
+    "mensalidadeCentavos": 9990,
+    "nome": "Aline Aguiar",
+    "recentWeekly": 2.5,
+    "status": "ativo",
+    "variation": -0.3214285714285714
+   },
+   {
+    "baselineWeekly": 3.2083333333333335,
+    "daysSinceLastAccess": 10,
+    "id": 3901,
+    "mensalidadeCentavos": 12990,
+    "nome": "André Brandão Costa",
+    "recentWeekly": 3.25,
+    "status": "inadimplente",
+    "variation": 0.012987012987012941
+   },
+   {
+    "baselineWeekly": 2.569620253164557,
+    "daysSinceLastAccess": 10,
+    "id": 3813,
+    "mensalidadeCentavos": 11490,
+    "nome": "José Cavalcanti",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": -0.9027093596059114
+   },
+   {
+    "baselineWeekly": 3.7142857142857144,
+    "daysSinceLastAccess": 10,
+    "id": 3880,
+    "mensalidadeCentavos": 8490,
+    "nome": "Paulo Almeida Costa",
+    "recentWeekly": 2.75,
+    "status": "ativo",
+    "variation": -0.25961538461538464
+   },
+   {
+    "baselineWeekly": 0.8615384615384615,
+    "daysSinceLastAccess": 8,
+    "id": 3858,
+    "mensalidadeCentavos": 12990,
+    "nome": "Cláudia Guimarães",
+    "recentWeekly": 0.5,
+    "status": "ativo",
+    "variation": -0.4196428571428571
+   },
+   {
+    "baselineWeekly": 1.088888888888889,
+    "daysSinceLastAccess": 8,
+    "id": 3744,
+    "mensalidadeCentavos": 11490,
+    "nome": "Daniel Cardoso Camargo",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": -0.0816326530612246
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 8,
+    "id": 3898,
+    "mensalidadeCentavos": 8490,
+    "nome": "Gabriela Barbosa Alves",
+    "recentWeekly": 2.25,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": 1.9055555555555554,
+    "daysSinceLastAccess": 8,
+    "id": 3353,
+    "mensalidadeCentavos": 12990,
+    "nome": "Helena Cunha Oliveira",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.2128279883381924
+   },
+   {
+    "baselineWeekly": 0.9722222222222222,
+    "daysSinceLastAccess": 8,
+    "id": 3739,
+    "mensalidadeCentavos": 12990,
+    "nome": "João Fernandes Neves",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.22857142857142856
+   },
+   {
+    "baselineWeekly": 2.061111111111111,
+    "daysSinceLastAccess": 8,
+    "id": 3679,
+    "mensalidadeCentavos": 7990,
+    "nome": "Mônica Costa",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.27223719676549857
+   },
+   {
+    "baselineWeekly": 1.0888888888888888,
+    "daysSinceLastAccess": 8,
+    "id": 3244,
+    "mensalidadeCentavos": 6590,
+    "nome": "Vitor Barros",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.3112244897959183
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 7,
+    "id": 3978,
+    "mensalidadeCentavos": 12990,
+    "nome": "André Cunha",
+    "recentWeekly": 0.25,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": 1.0888888888888888,
+    "daysSinceLastAccess": 7,
+    "id": 3733,
+    "mensalidadeCentavos": 7990,
+    "nome": "Daniela Oliveira",
+    "recentWeekly": 1,
+    "status": "inadimplente",
+    "variation": -0.08163265306122441
+   },
+   {
+    "baselineWeekly": 1.2105263157894737,
+    "daysSinceLastAccess": 7,
+    "id": 3771,
+    "mensalidadeCentavos": 8490,
+    "nome": "Diego Marques Machado",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": -0.3804347826086956
+   },
+   {
+    "baselineWeekly": 0.8555555555555555,
+    "daysSinceLastAccess": 7,
+    "id": 3238,
+    "mensalidadeCentavos": 12990,
+    "nome": "Felipe Esteves",
+    "recentWeekly": 1,
+    "status": "ativo",
+    "variation": 0.1688311688311689
+   },
+   {
+    "baselineWeekly": 2.7222222222222223,
+    "daysSinceLastAccess": 7,
+    "id": 3566,
+    "mensalidadeCentavos": 9990,
+    "nome": "Fernanda Freitas",
+    "recentWeekly": 2,
+    "status": "ativo",
+    "variation": -0.2653061224489796
+   },
+   {
+    "baselineWeekly": 1.0769230769230769,
+    "daysSinceLastAccess": 7,
+    "id": 3890,
+    "mensalidadeCentavos": 8490,
+    "nome": "Fábio Araújo",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": 0.16071428571428578
+   },
+   {
+    "baselineWeekly": 2.7222222222222223,
+    "daysSinceLastAccess": 7,
+    "id": 3462,
+    "mensalidadeCentavos": 12990,
+    "nome": "Ingrid Mendes Antunes",
+    "recentWeekly": 2.5,
+    "status": "ativo",
+    "variation": -0.08163265306122452
+   },
+   {
+    "baselineWeekly": 1.05,
+    "daysSinceLastAccess": 7,
+    "id": 3274,
+    "mensalidadeCentavos": 12990,
+    "nome": "José Costa",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": 0.19047619047619044
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 7,
+    "id": 3934,
+    "mensalidadeCentavos": 11490,
+    "nome": "Larissa Borges",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 7,
+    "id": 3937,
+    "mensalidadeCentavos": 6590,
+    "nome": "Larissa Gomes Araújo",
+    "recentWeekly": 2.25,
+    "status": "ativo",
+    "variation": null
+   },
+   {
+    "baselineWeekly": 3.072222222222222,
+    "daysSinceLastAccess": 7,
+    "id": 3401,
+    "mensalidadeCentavos": 11490,
+    "nome": "Patrícia Cavalcanti",
+    "recentWeekly": 2.25,
+    "status": "ativo",
+    "variation": -0.267631103074141
+   },
+   {
+    "baselineWeekly": 2.022222222222222,
+    "daysSinceLastAccess": 7,
+    "id": 3210,
+    "mensalidadeCentavos": 12990,
+    "nome": "Sérgio Moura",
+    "recentWeekly": 1.25,
+    "status": "ativo",
+    "variation": -0.38186813186813184
+   },
+   {
+    "baselineWeekly": 1.9833333333333332,
+    "daysSinceLastAccess": 7,
+    "id": 3377,
+    "mensalidadeCentavos": 9990,
+    "nome": "Sérgio Pereira",
+    "recentWeekly": 2,
+    "status": "ativo",
+    "variation": 0.008403361344537898
+   },
+   {
+    "baselineWeekly": 3.255813953488372,
+    "daysSinceLastAccess": 7,
+    "id": 3842,
+    "mensalidadeCentavos": 12990,
+    "nome": "Wesley Batista Andrade",
+    "recentWeekly": 1.5,
+    "status": "ativo",
+    "variation": -0.5392857142857143
+   },
+   {
+    "baselineWeekly": null,
+    "daysSinceLastAccess": 7,
+    "id": 3935,
+    "mensalidadeCentavos": 12990,
+    "nome": "Yasmin Silva Martins",
+    "recentWeekly": 0.75,
+    "status": "ativo",
+    "variation": null
+   }
+  ]
+ },
+ "thresholds": {
+  "frequencyDrop": 0.3,
+  "inactivityDays": [
+   7,
+   14,
+   30
+  ],
+  "minBaselineWeekly": 1
+ }
+}

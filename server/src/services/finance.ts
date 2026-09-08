@@ -5,7 +5,7 @@ import type {
   FinanceMonth,
   FinanceResponse,
 } from '@gymvis/shared';
-import { sqlite } from '../db/client';
+import { db } from '../db/client';
 import { addMonths, lastDayOfMonthStr, monthKey, monthLabel, startOfMonth, toDateStr } from '../lib/dates';
 
 /**
@@ -23,23 +23,19 @@ interface StudentMoneyRow {
   mensalidade_centavos: number;
 }
 
-const studentsMoneyStmt = sqlite.prepare(
-  'SELECT data_entrada, data_saida, status, mensalidade_centavos FROM students WHERE academy_id = ?',
-);
+const ALUNOS_FINANCEIRO =
+  'SELECT data_entrada, data_saida, status, mensalidade_centavos FROM students WHERE academy_id = ?';
 
-const expensesRangeStmt = sqlite.prepare(
-  'SELECT id, descricao, categoria, valor_centavos, data FROM expenses WHERE academy_id = ? AND data >= ? AND data <= ? ORDER BY data DESC, id DESC',
-);
+const DESPESAS_NA_JANELA =
+  'SELECT id, descricao, categoria, valor_centavos, data FROM expenses WHERE academy_id = ? AND data >= ? AND data <= ? ORDER BY data DESC, id DESC';
 
-const insertExpenseStmt = sqlite.prepare(
-  'INSERT INTO expenses (academy_id, descricao, categoria, valor_centavos, data, created_at) VALUES (?, ?, ?, ?, ?, ?)',
-);
+const INSERIR_DESPESA =
+  'INSERT INTO expenses (academy_id, descricao, categoria, valor_centavos, data, created_at) VALUES (?, ?, ?, ?, ?, ?) RETURNING id';
 
-const updateExpenseStmt = sqlite.prepare(
-  'UPDATE expenses SET descricao = ?, categoria = ?, valor_centavos = ?, data = ? WHERE id = ? AND academy_id = ?',
-);
+const ATUALIZAR_DESPESA =
+  'UPDATE expenses SET descricao = ?, categoria = ?, valor_centavos = ?, data = ? WHERE id = ? AND academy_id = ?';
 
-const deleteExpenseStmt = sqlite.prepare('DELETE FROM expenses WHERE id = ? AND academy_id = ?');
+const APAGAR_DESPESA = 'DELETE FROM expenses WHERE id = ? AND academy_id = ?';
 
 interface ExpenseRow {
   id: number;
@@ -62,23 +58,25 @@ function enrolledOn(r: StudentMoneyRow, endStr: string): boolean {
   return r.data_entrada <= endStr && (r.data_saida === null || r.data_saida > endStr);
 }
 
-export function getFinance(
+export async function getFinance(
   academyId: number,
   periodMonths: number,
   now = new Date(),
-): FinanceResponse {
-  const students = studentsMoneyStmt.all(academyId) as StudentMoneyRow[];
+): Promise<FinanceResponse> {
   const currentMonthStart = startOfMonth(now);
   const today = toDateStr(now);
-
   const firstMonthStart = addMonths(currentMonthStart, -(periodMonths - 1));
-  const expenses = (
-    expensesRangeStmt.all(
+
+  const [students, linhasDespesa] = await Promise.all([
+    db.all<StudentMoneyRow>(ALUNOS_FINANCEIRO, academyId),
+    db.all<ExpenseRow>(
+      DESPESAS_NA_JANELA,
       academyId,
       toDateStr(firstMonthStart),
       lastDayOfMonthStr(currentMonthStart),
-    ) as ExpenseRow[]
-  ).map(toExpense);
+    ),
+  ]);
+  const expenses = linhasDespesa.map(toExpense);
 
   const despesasPorMes = new Map<string, number>();
   for (const e of expenses) {
@@ -144,8 +142,12 @@ export function getFinance(
   };
 }
 
-export function createExpense(academyId: number, payload: ExpensePayload): number {
-  const info = insertExpenseStmt.run(
+export async function createExpense(
+  academyId: number,
+  payload: ExpensePayload,
+): Promise<number> {
+  const linha = await db.one<{ id: number }>(
+    INSERIR_DESPESA,
     academyId,
     payload.descricao.trim(),
     payload.categoria,
@@ -153,22 +155,26 @@ export function createExpense(academyId: number, payload: ExpensePayload): numbe
     payload.data,
     Date.now(),
   );
-  return Number(info.lastInsertRowid);
+  return linha!.id;
 }
 
-export function updateExpense(academyId: number, id: number, payload: ExpensePayload): boolean {
-  return (
-    updateExpenseStmt.run(
-      payload.descricao.trim(),
-      payload.categoria,
-      payload.valorCentavos,
-      payload.data,
-      id,
-      academyId,
-    ).changes > 0
+export async function updateExpense(
+  academyId: number,
+  id: number,
+  payload: ExpensePayload,
+): Promise<boolean> {
+  const afetadas = await db.run(
+    ATUALIZAR_DESPESA,
+    payload.descricao.trim(),
+    payload.categoria,
+    payload.valorCentavos,
+    payload.data,
+    id,
+    academyId,
   );
+  return afetadas > 0;
 }
 
-export function deleteExpense(academyId: number, id: number): boolean {
-  return deleteExpenseStmt.run(id, academyId).changes > 0;
+export async function deleteExpense(academyId: number, id: number): Promise<boolean> {
+  return (await db.run(APAGAR_DESPESA, id, academyId)) > 0;
 }

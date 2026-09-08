@@ -1,36 +1,33 @@
 import type { StudentPayload } from '@gymvis/shared';
-import { sqlite } from '../db/client';
+import { db } from '../db/client';
+import { invalidarCache } from './metricsCache';
 import { planBelongsToAcademy } from './plans';
 import { promotionBelongsToAcademy } from './promotions';
 
 /** Cadastro e edição manual de alunos. */
 
-const insertStmt = sqlite.prepare(`
+const INSERIR = `
   INSERT INTO students
     (academy_id, plano_id, promocao_id, nome, email, telefone,
      data_entrada, data_saida, status, mensalidade_centavos)
   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`);
+  RETURNING id
+`;
 
-const updateStmt = sqlite.prepare(`
+const ATUALIZAR = `
   UPDATE students SET
     plano_id = ?, promocao_id = ?, nome = ?, email = ?, telefone = ?,
     data_entrada = ?, data_saida = ?, status = ?, mensalidade_centavos = ?
   WHERE id = ? AND academy_id = ?
-`);
+`;
 
-const deleteStudentStmt = sqlite.prepare('DELETE FROM students WHERE id = ? AND academy_id = ?');
-const deleteAccessesStmt = sqlite.prepare(
-  'DELETE FROM access_events WHERE aluno_id = ? AND academy_id = ?',
-);
+const APAGAR_ALUNO = 'DELETE FROM students WHERE id = ? AND academy_id = ?';
+const APAGAR_ACESSOS = 'DELETE FROM access_events WHERE aluno_id = ? AND academy_id = ?';
 
-const insertAccessStmt = sqlite.prepare(
-  "INSERT INTO access_events (academy_id, aluno_id, timestamp, tipo_evento) VALUES (?, ?, ?, 'entrada')",
-);
+const INSERIR_ACESSO =
+  "INSERT INTO access_events (academy_id, aluno_id, timestamp, tipo_evento) VALUES (?, ?, ?, 'entrada')";
 
-const studentExistsStmt = sqlite.prepare(
-  'SELECT data_entrada FROM students WHERE id = ? AND academy_id = ?',
-);
+const ALUNO_EXISTE = 'SELECT data_entrada FROM students WHERE id = ? AND academy_id = ?';
 
 export type WriteError =
   | { ok: false; motivo: 'plano-invalido' }
@@ -40,9 +37,11 @@ export type WriteError =
 
 export type WriteResult = { ok: true; id: number } | WriteError;
 
-function validateRefs(academyId: number, p: StudentPayload): WriteError | null {
-  if (!planBelongsToAcademy(academyId, p.planoId)) return { ok: false, motivo: 'plano-invalido' };
-  if (p.promocaoId !== null && !promotionBelongsToAcademy(academyId, p.promocaoId)) {
+async function validateRefs(academyId: number, p: StudentPayload): Promise<WriteError | null> {
+  if (!(await planBelongsToAcademy(academyId, p.planoId))) {
+    return { ok: false, motivo: 'plano-invalido' };
+  }
+  if (p.promocaoId !== null && !(await promotionBelongsToAcademy(academyId, p.promocaoId))) {
     return { ok: false, motivo: 'promocao-invalida' };
   }
   if (p.dataSaida !== null && p.dataSaida < p.dataEntrada) {
@@ -56,11 +55,12 @@ const nullIfBlank = (s: string | null): string | null => {
   return t.length > 0 ? t : null;
 };
 
-export function createStudent(academyId: number, p: StudentPayload): WriteResult {
-  const invalid = validateRefs(academyId, p);
+export async function createStudent(academyId: number, p: StudentPayload): Promise<WriteResult> {
+  const invalid = await validateRefs(academyId, p);
   if (invalid) return invalid;
 
-  const info = insertStmt.run(
+  const linha = await db.one<{ id: number }>(
+    INSERIR,
     academyId,
     p.planoId,
     p.promocaoId,
@@ -72,14 +72,20 @@ export function createStudent(academyId: number, p: StudentPayload): WriteResult
     p.status,
     p.mensalidadeCentavos,
   );
-  return { ok: true, id: Number(info.lastInsertRowid) };
+  invalidarCache(academyId);
+  return { ok: true, id: linha!.id };
 }
 
-export function updateStudent(academyId: number, id: number, p: StudentPayload): WriteResult {
-  const invalid = validateRefs(academyId, p);
+export async function updateStudent(
+  academyId: number,
+  id: number,
+  p: StudentPayload,
+): Promise<WriteResult> {
+  const invalid = await validateRefs(academyId, p);
   if (invalid) return invalid;
 
-  const changes = updateStmt.run(
+  const afetadas = await db.run(
+    ATUALIZAR,
     p.planoId,
     p.promocaoId,
     p.nome.trim(),
@@ -91,26 +97,30 @@ export function updateStudent(academyId: number, id: number, p: StudentPayload):
     p.mensalidadeCentavos,
     id,
     academyId,
-  ).changes;
+  );
 
-  return changes > 0 ? { ok: true, id } : { ok: false, motivo: 'nao-encontrado' };
+  invalidarCache(academyId);
+  return afetadas > 0 ? { ok: true, id } : { ok: false, motivo: 'nao-encontrado' };
 }
 
 /** Excluir o aluno apaga também seus acessos (o histórico não faz sentido sozinho). */
-const deleteTx = sqlite.transaction((academyId: number, id: number) => {
-  deleteAccessesStmt.run(id, academyId);
-  return deleteStudentStmt.run(id, academyId).changes > 0;
-});
-
-export function deleteStudent(academyId: number, id: number): boolean {
-  return deleteTx(academyId, id);
+export async function deleteStudent(academyId: number, id: number): Promise<boolean> {
+  invalidarCache(academyId);
+  return db.transaction(async (tx) => {
+    await tx.run(APAGAR_ACESSOS, id, academyId);
+    return (await tx.run(APAGAR_ALUNO, id, academyId)) > 0;
+  });
 }
 
 export type AccessResult = 'ok' | 'nao-encontrado' | 'antes-da-entrada' | 'no-futuro';
 
 /** Registro manual de acesso, para quando a catraca falhou. */
-export function addAccess(academyId: number, studentId: number, timestamp: number): AccessResult {
-  const row = studentExistsStmt.get(studentId, academyId) as { data_entrada: string } | undefined;
+export async function addAccess(
+  academyId: number,
+  studentId: number,
+  timestamp: number,
+): Promise<AccessResult> {
+  const row = await db.one<{ data_entrada: string }>(ALUNO_EXISTE, studentId, academyId);
   if (!row) return 'nao-encontrado';
   if (timestamp > Date.now()) return 'no-futuro';
 
@@ -118,6 +128,7 @@ export function addAccess(academyId: number, studentId: number, timestamp: numbe
   const dia = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   if (dia < row.data_entrada) return 'antes-da-entrada';
 
-  insertAccessStmt.run(academyId, studentId, timestamp);
+  await db.run(INSERIR_ACESSO, academyId, studentId, timestamp);
+  invalidarCache(academyId);
   return 'ok';
 }

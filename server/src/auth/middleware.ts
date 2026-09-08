@@ -13,13 +13,20 @@ export interface AuthContext {
  */
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
   const token = tokenFromCookies(req.cookies);
-  const user = token ? resolveSession(token) : null;
-  if (!user) {
+  if (!token) {
     res.status(401).json({ error: 'Não autenticado' });
     return;
   }
-  res.locals.auth = { userId: user.id, academyId: user.academyId } satisfies AuthContext;
-  next();
+  resolveSession(token)
+    .then((user) => {
+      if (!user) {
+        res.status(401).json({ error: 'Não autenticado' });
+        return;
+      }
+      res.locals.auth = { userId: user.id, academyId: user.academyId } satisfies AuthContext;
+      next();
+    })
+    .catch(next);
 }
 
 /** Contexto anexado por requireAuth (use apenas em rotas protegidas). */
